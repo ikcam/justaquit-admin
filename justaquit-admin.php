@@ -57,6 +57,12 @@ License: GPL2
 
 	// Register Settings
 	function settings_register(){
+		register_setting( 'justaquit', 'justaquit_settings', array($this, 'verify_settings') );
+	}
+
+	// Callback functions
+	function verify_settings(){
+
 	}
 
 	// Just for show options available
@@ -67,6 +73,7 @@ License: GPL2
 		<ul>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Add New Client</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Add New Domain</a></li>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_settings">Settings</a></li>
 		</ul>
 	</div>
 <?php
@@ -306,12 +313,68 @@ License: GPL2
 	</div>
 <?php		
 	}
+
+	function page_settings(){
+?>
+	<div class="wrap">
+		<h2>JustAquit Admin Settings</h2>
+
+		<form action="options.php" method="post">
+<?php
+	$settings = get_option('justaquit_settings');
+?>
+			<table form="form-table">
+			<tbody>
+				<tr valign="top">
+					<th scope="row">
+						<label>Linode API Key:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[linodeAPI]" value="<?php echo $settings['linodeAPI'] ?>" />
+					</td>
+				</tr>
+<?php
+	if( $settings['linodeAPI'] ) :
+?>
+				<tr valign="top">
+					<th scope="row">
+						<label>Master Domain:</label>
+					</th>
+					<td>
+						<select name="justaquit_settings[linodeDomain]">
+<?php
+require('Services/Linode.php');
+
+try {
+	$linode = new Services_Linode('LbMPSPcoqfaTuqxySC5Fv92CjlQmY3nrlovxdo6C2xDwgBDmWmdoZtMeWMf2kIa2');
+	$domains = $linode->domain_list();
+	$domains = $domains['DATA'];
+	foreach( $domains as $domain ){
+		echo '<option value="'.$domain['DOMAINID'].'">'.$domain['DOMAIN'].'</option>';
+	}
+}
+?>
+						</select> 
+					</td>
+				</tr>
+<?php
+	endif;
+?>
+			</tbody>
+			</table>
+			<p class="submit"><input type="submit" value="<?php _e('Save Changes') ?>" class="button-primary" /></p>
+		</form>
+	</div>
+
+<?php
+	}
 }
 
 function justaquit_init(){
 	add_menu_page( 'JustAquit', 'JustAquit', 'administrator', 'aquit', array('justaquit', 'page_main'), '', 59 );
 	add_submenu_page( 'aquit', 'Add Client', 'Add Client', 'administrator', 'aquit_addclient', array( 'justaquit', 'page_addclient' ) );
 	add_submenu_page( 'aquit', 'Add Domain', 'Add Domain', 'administrator', 'aquit_adddomain', array( 'justaquit', 'page_adddomain' ) );
+	add_submenu_page( 'aquit', 'Settings', 'Settings', 'administrator', 'aquit_settings', array( 'justaquit', 'page_settings' ) );
 	add_action('admin_init', array('justaquit', 'settings_register'));
 }
 add_action('admin_menu', 'justaquit_init');
