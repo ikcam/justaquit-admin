@@ -84,8 +84,9 @@ License: GPL2
 			$client_registered = $_POST['client_registered'];
 
 			global $wpdb;
-			$query = "SELECT * FROM $wpdb->clients WHERE client_email = %s";
-			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client_email ) );
+			$table = $wpdb->prefix.'clients';
+			$query = "SELECT * FROM $table WHERE client_email = %s";
+			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client_email ) );	
 			if( $procced == 0 ){
 				$query = "INSERT INTO $wpdb->clients ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( %d, %s, %s, %s, %s, %s )";
 				$wpdb->query( $wpdb->prepare( $query, array( $client_author, $client_name, $client_email, $client_address, $client_phone, $client_registered ) ) );
@@ -155,21 +156,27 @@ License: GPL2
 			<tbody id="the-list" class="list:client">
 <?php
 	global $wpdb;
-	$query = "SELECT * FROM $wpdb->clients";
-	$clients = $wpdb->get_results($query);
-	foreach( $clients as $client ):
+	$table = $wpdb->prefix.'clients';
+	$query = "SELECT * FROM $table";
+	$clients = $wpdb->get_results( $query );
+	$i=0;
+	foreach( $clients as $client ) : $i++;
 ?>
-				<tr class="alternate">
-					<th scope="row" class="column-id"><?php $client->ID ?></th>
-					<td class="name column-name"><strong><?php $client->client_name ?></strong></td>
+				<tr <?php if($i%2==0){echo 'class="alternate"';} ?>>
+					<th scope="row" class="column-id"><?php echo $client->ID ?></th>
+					<td class="name column-name"><strong><?php echo $client->client_name ?></strong></td>
 					<td class="email column-email"><a href="<?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
 					<td class="phone column-phone"><?php echo $client->client_phone ?></td>
 					<td class="domains column-domains">
 <?php
 		global $wpdb;
-		$query = "SELECT * FROM $wpdb->clientdomain WHERE client_id = %s";
+		$table = $wpdb->prefix.'clientdomain';
+		$query = "SELECT * FROM $table WHERE client_id = %s";
 		$domains = $wpdb->get_var( $wpdb->prepare( $query, $client->ID ) );
-		echo $domains;
+		if( $domains )
+			echo $domains;
+		else
+			echo '0';
 ?>
 					</td>
 					<td class="author column-author">
@@ -252,7 +259,8 @@ License: GPL2
 						<select name="client_id">
 <?php
 	global $wpdb;
-	$query = "SELECT ID, client_name FROM $wpdb->clients ORDER BY ID";
+	$table = $wpdb->prefix.'clients';
+	$query = "SELECT ID, client_name FROM $table";
 	$clients = $wpdb->get_results($query);
 	foreach( $clients as $client ){
 ?>
