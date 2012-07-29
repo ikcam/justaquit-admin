@@ -1,3 +1,15 @@
+<?php
+/*
+Plugin Name: JustAquit Admin
+Plugin URI: http://justaquit.net
+Description: Controls JustAquit Clients
+Version: v0.0.1
+Author: Irving Kcam
+Author URI: http://ikcam.com
+License: GPL2
+*/
+?>
+
 <?php 
 class justaquit {
 	function settings_register(){
