@@ -61,8 +61,14 @@ License: GPL2
 	}
 
 	// Callback functions
-	function verify_settings(){
+	function verify_settings($input){
+		if( !$input['linodeAPI'] )
+			$input['linodeAPI'] = '';
 
+		if( !$input['linodeDomain'] )
+			$input['linodeDomain'] = '';
+
+		return $input;
 	}
 
 	// Just for show options available
@@ -321,6 +327,7 @@ License: GPL2
 
 		<form action="options.php" method="post">
 <?php
+	settings_fields('justaquit');
 	$settings = get_option('justaquit_settings');
 ?>
 			<table form="form-table">
