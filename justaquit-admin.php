@@ -12,24 +12,48 @@ License: GPL2
 
 <?php 
 class justaquit {
+	// Register Settings
 	function settings_register(){
-
 	}
 
+	// Just for show options available
 	function page_main(){
 ?>
 	<div class="wrap">
 		<h2>JustAquit Admin Options</h2>
-		<form action="options.php" method="post">
-		</form>
+		<ul>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Add New Client</a></li>
+			<li><a href="#">View Current Clients</a></li>
+		</ul>
 	</div>
 <?php
 	}
 
+	// Add a new client
 	function page_addclient(){
+		$continue = $_POST['submit'];
+		if( $continue ){
+			$domain = $_POST['domain'];
+		}
 ?>
 	<div class="wrap">
 		<h2>Add New Client</h2>
+		<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+			<table class="form-table">
+			<tbody>
+				<tr valign="top">
+					<th scope="row">
+						<label for="domain">Domain</label>
+					</th>
+					<td>
+						<input type="text" name="domain" />
+						<span class="description">User domain or subdomain. Example: CLIENT.justaquit.net</span>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Add New Client" /></p>
+		</form>
 	</div>
 <?php		
 	}
