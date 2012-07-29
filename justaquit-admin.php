@@ -16,7 +16,7 @@ class justaquit {
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "0.9";
+		$justaquit_db_version = "0.91";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
@@ -45,9 +45,10 @@ class justaquit {
 			);";
 			$table_name = $wpdb->prefix."clientdomain";
 			$sql .= "CREATE TABLE $table_name (
-				clientdomain_id mediumint(9) NOT NULL AUTO_INCREMENT,
+				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				client_id mediumint(9) NOT NULL,
 				domain_id mediumint(9) NOT NULL
+				UNIQUE KEY ID (ID)
 			);";
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta($sql);
