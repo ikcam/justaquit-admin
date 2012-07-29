@@ -232,7 +232,7 @@ License: GPL2
 	function page_adddomain(){
 ?>
 	<script type="text/javascript">
-$(function(){
+jQuery(function(){
 	$('#domainName').keydown(function(){
 		var value = $this.attr('value');
 		$('#domainUser').attr( 'value', value );
