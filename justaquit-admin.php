@@ -57,15 +57,15 @@ License: GPL2
 
 	// Register Settings
 	function settings_register(){
-		register_setting( 'justaquit', 'justaquit_settings', array($this, 'verify_settings') );
+		register_setting( 'justaquit', 'justaquit_settings', array( 'justaquit', 'verify_settings') );
 	}
 
 	// Callback functions
 	function verify_settings($input){
-		if( !$input['linodeAPI'] )
+		if( $input['linodeAPI'] == NULL )
 			$input['linodeAPI'] = '';
 
-		if( !$input['linodeDomain'] )
+		if( $input['linodeDomain'] == NULL )
 			$input['linodeDomain'] = '';
 
 		return $input;
