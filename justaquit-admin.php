@@ -15,37 +15,44 @@ class justaquit {
 	// Install
 	function install(){
 		global $wpdb;
-		$table_name = $wpdb->prefix."clients";
-		$sql = "CREATE TABLE $table_name (
-			ID mediumint(9) NOT NULL AUTO_INCREMENT,
-			client_author mediumint(9) DEFAULT 0 NOT NULL,
-			client_name varchar(250) NOT NULL,
-			client_email varchar(100) NOT NULL,
-			client_phone varchar()
-			client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			UNIQUE KEY ID (ID)
-		);";
-		$table_name = $wpdb->prefix."domains";
-		$sql .= "CREATE TABLE $table_name (
-			ID mediumint(9) NOT NULL AUTO_INCREMENT,
-			client_id mediumint(9) NOT NULL,
-			database_id mediumint(9) NOT NULL,
-			domain_author mediumint(9) DEFAULT 0 NOT NULL,
-			domain_title text NOT NULL,
-			domain_user varchar(50) NOT NULL,
-			domain_url varchar(55) NOT NULL,
-			domain_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			UNIQUE KEY ID (ID)
-		);";
-		$table_name = $wpdb->prefix."clientdomain";
-		$sql .= "CREATE TABLE $table_name (
-			clientdomain_id mediumint(9) NOT NULL AUTO_INCREMENT,
-			client_id mediumint(9) NOT NULL,
-			domain_id mediumint(9) NOT NULL
-		);";
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($sql);
+		global $justaquit_db_version;
+		$justaquit_db_version = "1.0";
+		$installed_ver = get_option( "justaquit_db_version" );
+		if( $installed_ver != $justaquit_db_version ) {
+			$table_name = $wpdb->prefix."clients";
+			$sql = "CREATE TABLE $table_name (
+				ID mediumint(9) NOT NULL AUTO_INCREMENT,
+				client_author mediumint(9) DEFAULT 0 NOT NULL,
+				client_name varchar(250) NOT NULL,
+				client_email varchar(100) NOT NULL,
+				client_phone varchar()
+				client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				UNIQUE KEY ID (ID)
+			);";
+			$table_name = $wpdb->prefix."domains";
+			$sql .= "CREATE TABLE $table_name (
+				ID mediumint(9) NOT NULL AUTO_INCREMENT,
+				client_id mediumint(9) NOT NULL,
+				database_id mediumint(9) NOT NULL,
+				domain_author mediumint(9) DEFAULT 0 NOT NULL,
+				domain_title text NOT NULL,
+				domain_user varchar(50) NOT NULL,
+				domain_url varchar(55) NOT NULL,
+				domain_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+				UNIQUE KEY ID (ID)
+			);";
+			$table_name = $wpdb->prefix."clientdomain";
+			$sql .= "CREATE TABLE $table_name (
+				clientdomain_id mediumint(9) NOT NULL AUTO_INCREMENT,
+				client_id mediumint(9) NOT NULL,
+				domain_id mediumint(9) NOT NULL
+			);";
+			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+			dbDelta($sql);
+
+			add_option("justaquit_db_version", $justaquit_db_version);
+		}
 	}
 
 	// Register Settings
