@@ -193,7 +193,5 @@ function justaquit_init(){
 	add_action('admin_init', array('justaquit', 'settings_register'));
 }
 add_action('admin_menu', 'justaquit_init');
-
 register_activation_hook( __FILE__, array('justaquit', 'install') );
-
 ?>
