@@ -20,6 +20,8 @@ class justaquit {
 ?>
 	<div class="wrap">
 		<h2>JustAquit Admin Options</h2>
+		<form action="options.php" method="post">
+		</form>
 	</div>
 <?php
 	}
