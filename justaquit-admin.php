@@ -231,18 +231,9 @@ License: GPL2
 	// Add a new domain
 	function page_adddomain(){
 		function scripts(){
-?>
-<script type="text/javascript">
-$(function(){
-	$('#domainName').keydown(function(){
-		var value = $this.attr('value');
-		$('#domainUser').attr( 'value', value );
-	})
-})
-</script>
-<?php
+			echo '<script type="text/javascript" src="'.plugin_dir_url(__FILE__).'javascript/main.jquery.js"></script>';
 		}
-		add_filter('admin_head', 'scripts');
+		add_action('admin_footer', 'scripts');
 ?>
 	<div class="wrap">
 <?php
