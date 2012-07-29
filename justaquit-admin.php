@@ -275,12 +275,12 @@ License: GPL2
 						<input type="text" name="domain" required />
 						<select name="domainID">
 <?php
-	$domainID = get_option('justaquit_settings');
-	$domainID = $domainID['linodeDomain'];
+	$settings = get_option('justaquit_settings');
+	$domainID = $settins['linodeDomain'];
 
 	require('Services/Linode.php');
 	try {
-		$linode = new Services_Linode('apikey');
+		$linode = new Services_Linode($settings['linodeAPI']);
 		$domainName = $linode->linode_list(array('DomainID' => $domainID));
 		$domainName = $domainName['DATA'];
 		$domainName = $domainName['DOMAIN'];
