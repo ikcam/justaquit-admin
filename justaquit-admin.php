@@ -352,6 +352,8 @@ try {
 	foreach( $domains as $domain ){
 		echo '<option value="'.$domain['DOMAINID'].'">'.$domain['DOMAIN'].'</option>';
 	}
+} catch (Services_Linode_Exception $e) {
+    echo $e->getMessage();
 }
 ?>
 						</select> 
