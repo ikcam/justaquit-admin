@@ -42,7 +42,7 @@ License: GPL2
 				UNIQUE KEY ID (ID)
 			);";
 			$table_name = $wpdb->prfix."databases";
-			$sql .= "CREATE $table_name(
+			$sql .= "CREATE TABLE $table_name(
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				db_name varchar(30) NOT NULL,
 				db_user varchar(16) NOT NULL,
