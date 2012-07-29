@@ -84,6 +84,9 @@ License: GPL2
 		if( $input['mainUser'] == NULL )
 			$input['mainUser'] = 'root';
 
+		if( $input['virtualHost'] == NULL )
+			$input['virtualHost'] = '/etc/apache2/sites-enabled/';
+
 		return $input;
 	}
 
@@ -369,7 +372,7 @@ License: GPL2
 					</td>
 				</tr>
 <?php
-	if( $settings['linodeAPI'] ) :
+	if( $settings['linodeAPI'] ) {
 ?>
 				<tr valign="top">
 					<th scope="row">
@@ -399,7 +402,7 @@ try {
 					</td>
 				</tr>
 <?php
-	endif;
+	}
 ?>
 				<tr vlalign="top">
 					<th scope="row">
@@ -417,6 +420,15 @@ try {
 					<td>
 						<input type="text" name="justaquit_settings[mainUser]" value="<?php echo $settings['mainUser'] ?>" />
 						<span class="description">Final linux user owner fro the new domain.</span>
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>Virtual Host Folder:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[virtualHost]" value="<?php echo $settings['virtualHost'] ?>" />
+						<span class="descrption">Tailing slash require.</span>
 					</td>
 				</tr>
 			</tbody>
