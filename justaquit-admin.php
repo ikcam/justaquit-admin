@@ -158,7 +158,7 @@ License: GPL2
 		<table class="wp-list-table widefat fixed clients" cellspacing="0">
 			<thead>
 				<tr>
-					<th scope="col" id="id" class="manage-column column-username"><span>ID</span></th>
+					<th scope="col" id="id" class="manage-column column-id"><span>ID</span></th>
 					<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
 					<th scope="col" id="email" class="manage-column column-email"><span>E-mail</span></th>
 					<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
@@ -215,47 +215,25 @@ License: GPL2
 <?php
 		$submit = $_POST['submit'];
 		if( $submit ){
-			$domain = $_POST['domain'];
-			$domain = esc_attr($domain);
+			global $wpdb;
+			$table = $wpdb->prefix.'domains';
+			$query = "SELECT * FROM $table WHERE domain_url = %s";
+			$procced = $wpdb->get_var( $wpdb->prepare( $query, $domain_url ) );
+			if( $procced ){
 
-			// Create folder
-			$query = 'mkdir /home/aqtclients/'.$domain;
-			$result = shell_exec($query);
+			} else {
+				$domain = $_POST['domain'];
+				$domain = esc_attr($domain);
+				
+				// Create folder
+				$query = 'mkdir /home/aqtclients/'.$domain;
+				$result = shell_exec($query);	
+			}
+
 
 			// Change folder permissions
 			$query = 'chown aqtclients:aqtclients /home/aqtclients/'.$domain;
 			$result = shell_exec($query);
-?>
-		<h2>Result</h2>
-		<table class="form-table">
-		<tbody>
-			<tr valign="top">
-				<th scope="row">
-					URL:
-				</th>
-				<td>
-					<a href="<?php echo $domain ?>" target="_blank"><?php echo $domain ?></a>
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					FTP User:
-				</th>
-				<td>
-					aqtclients
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row">
-					FTP Password:
-				</th>
-				<td>
-					******
-				</td>
-			</tr>
-		</tbody>
-		</table>
-<?php
 		}
 ?>			
 		<h2>Add New Domain</h2>
@@ -316,6 +294,40 @@ License: GPL2
 			</table>
 			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Add New Domain" /></p>
 		</form>
+
+		<h2>Current Domains</h2>
+		<table class="wp-list-table widefat fixed domains" cellspacing="0">
+			<thead>
+				<tr>
+					<th scope="col" id="id" class="manage-column column-id"><span>ID</span></th>
+					<th scope="col" id="domain" class="manage-column column-domain"><span>Name</span></th>
+					<th scope="col" id="client" class="manage-column column-client"><span>Client</span></th>
+					<th scope="col" id="title" class="manage-column column-title"><span>Title</span></th>
+					<th scope="col" id="url" class="manage-column column-url"><span>URL</span></th>
+				</tr>
+			</thead>
+			<tbody id="the-list" class="list:domain">
+				<tr>
+					<th scope="row" class="column-id"><?php echo $domain->ID ?></th>
+					<td class="domain column-domain"><strong><?php echo $domain->user ?></strong></td>
+					<td class="client column-client">
+						<span>
+<?php 
+	global $wpdb;
+	$table = $wpdb->prefix.'clients';
+	$query = "SELECT client_name FROM $table WHERE ID = %s";
+	$client = $wpdb->get_var( $wpdb->prepare( $query, $domain->client_id ) );
+	echo $client;
+?>
+						</span></td>
+					<td class="title column-title">968754010</td>
+					<td class="url column-url">0</td>
+				</tr>
+			</tbody>
+		</table>
+
+
+
 	</div>
 <?php		
 	}
