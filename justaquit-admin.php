@@ -14,7 +14,7 @@ License: GPL2
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "1.0";
+		$justaquit_db_version = "1.0.1";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
