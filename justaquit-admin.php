@@ -283,7 +283,7 @@ License: GPL2
 		$linode = new Services_Linode($settings['linodeAPI']);
 		$domainName = $linode->domain_list(array('DomainID' => $domainID));
 		$domainName = $domainName['DATA'];
-		$domainName = $domainName['DOMAIN'];
+		$domainName = $domainName[0]['DOMAIN'];
 } catch (Services_Linode_Exception $e) {
 echo $e->getMessage();
 }
