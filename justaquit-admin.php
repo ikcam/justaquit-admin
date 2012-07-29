@@ -16,7 +16,7 @@ class justaquit {
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "1.0";
+		$justaquit_db_version = "0.9";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
@@ -25,7 +25,8 @@ class justaquit {
 				client_author mediumint(9) DEFAULT 0 NOT NULL,
 				client_name varchar(250) NOT NULL,
 				client_email varchar(100) NOT NULL,
-				client_phone varchar()
+				client_address varchar(150) NOT NULL,
+				client_phone varchar(20) NOT NULL,
 				client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
 			);";
