@@ -78,7 +78,7 @@ License: GPL2
 		if( $input['linodeDomain'] == NULL )
 			$input['linodeDomain'] = '';
 
-		if( $input['mainFoler'] == NULL )
+		if( $input['mainFolder'] == NULL )
 			$input['mainFolder'] = '';
 
 		if( $input['mainUser'] == NULL )
@@ -410,7 +410,7 @@ try {
 					</th>
 					<td>
 						<input type="text" name="justaquit_settings[mainFolder]" value="<?php echo $settings['mainFolder'] ?>" />
-						<span class="description">Base folder location for the domains.</span>
+						<span class="description">Base folder location for the domains.Tailing slash required.</span>
 					</td>
 				</tr>
 				<tr valign="top">
@@ -428,7 +428,7 @@ try {
 					</th>
 					<td>
 						<input type="text" name="justaquit_settings[virtualHost]" value="<?php echo $settings['virtualHost'] ?>" />
-						<span class="descrption">Tailing slash require.</span>
+						<span class="description">Tailing slash require.</span>
 					</td>
 				</tr>
 			</tbody>
