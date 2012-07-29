@@ -230,15 +230,11 @@ License: GPL2
 
 	// Add a new domain
 	function page_adddomain(){
+		function scripts(){
+			wp_enqueue_script( 'justaquit', plugin_dir_url(__FILE__) . '/javascript/main.jquery.js', array('jquery') );
+		}
+		add_action('wp_enqueue_scripts', 'scripts');
 ?>
-	<script type="text/javascript">
-jQuery(function(){
-	$('#domainName').keydown(function(){
-		var value = $this.attr('value');
-		$('#domainUser').attr( 'value', value );
-	})
-})
-	</script>
 	<div class="wrap">
 <?php
 		$submit = $_POST['submit'];
