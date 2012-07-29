@@ -330,7 +330,7 @@ License: GPL2
 	settings_fields('justaquit');
 	$settings = get_option('justaquit_settings');
 ?>
-			<table form="form-table">
+			<table class="form-table">
 			<tbody>
 				<tr valign="top">
 					<th scope="row">
