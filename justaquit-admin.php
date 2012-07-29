@@ -14,7 +14,7 @@ License: GPL2
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "0.92";
+		$justaquit_db_version = "1.0";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
@@ -41,6 +41,16 @@ License: GPL2
 				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
 			);";
+			$table_name = $wpdb->prfix."databases";
+			$sql .= "CREATE $table_name(
+				ID mediumint(9) NOT NULL AUTO_INCREMENT,
+				db_name varchar(30) NOT NULL,
+				db_user varchar(16) NOT NULL,
+				db_password varchar(55) NOT NULL,
+				client_id mediumint(9) NOT NULL,
+				domain_id mediumint(9) NOT NULL,
+				UNIQUE KEY ID (ID)
+			)";
 			$table_name = $wpdb->prefix."clientdomain";
 			$sql .= "CREATE TABLE $table_name (
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -67,6 +77,12 @@ License: GPL2
 
 		if( $input['linodeDomain'] == NULL )
 			$input['linodeDomain'] = '';
+
+		if( $input['mainFoler'] == NULL )
+			$input['mainFolder'] = '';
+
+		if( $input['mainUser'] == NULL )
+			$input['mainUser'] = 'root';
 
 		return $input;
 	}
@@ -385,6 +401,24 @@ try {
 <?php
 	endif;
 ?>
+				<tr vlalign="top">
+					<th scope="row">
+						<label>Main Folder:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[mainFolder]" value="<?php echo $settings['mainFolder'] ?>" />
+						<span class="description">Base folder location for the domains.</span>
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>Main User:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[mainUser]" value="<?php echo $settings['mainUser'] ?>" />
+						<span class="description">Final linux user owner fro the new domain.</span>
+					</td>
+				</tr>
 			</tbody>
 			</table>
 			<p class="submit"><input type="submit" value="<?php _e('Save Changes') ?>" class="button-primary" /></p>
