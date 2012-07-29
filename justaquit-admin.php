@@ -76,12 +76,80 @@ class justaquit {
 
 	// Add a new client
 	function page_addclient(){
+		$submit = $_POST['submit'];
+		if( $submit ){
+			$client_author = $_POST['client_author'];
+			$client_name = $_POST['client_name'];
+			$client_email = $_POST['client_email'];
+			$client_address = $_POST['client_address'];
+			$client_phone = $_POST['client_phone'];
+			$client_registered = $_POST['client_registered'];
+
+			global $wpdb;
+			$query = "SELECT * FROM $wpdb->clients WHERE client_email = $client_email";
+			$procced = $wpdb->get_var( $wpdb->prepare( $query ) );
+			if( $procced == 0 ){
+				$client = array(
+						'client_author'     => $client_author,
+						'client_name'       => $client_name,
+						'client_email'      => $client_email,
+						'client_address'    => $client_address,
+						'client_phone'      => $client_phone,
+						'client_registered' => $client_registered
+					);
+				$table = $wpdb->prefix.'clients';
+				$wpdb->insert( $table, $client );
+				echo '<div id="message" class="updated fade"><p>User created successfully.</p></div>';
+			} else {
+				echo '<div id="message" class="error fade"><p>User already exists.</p></div>';
+			}
+		}
 ?>
 	<div class="wrap">
 		<h2>Add New Client</h2>
+		<form action="<?php echo $_SERVER['PHP_SELF'] ?>?page=aquit_addclient" method="post">
+			<input type="hidden" name="client_author" value="<?php echo get_current_user_id() ?>" />
+			<input type="hidden" name="client_registered" value="<?php echo current_time('mysql') ?>" />
+			<table class="form-table">
+			<tbody>
+				<tr valign="top">
+					<th scope="row">
+						<label for="client_name">Client Name:</label>
+					</th>
+					<td>
+						<input type="text" name="client_name" required />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="client_email">Client Email:</label>
+					</th>
+					<td>
+						<input type="text" name="client_email" required />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="client_address">Client Address:</label>
+					</th>
+					<td>
+						<input type="text" name="client_address" />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label for="client_address">Client Phone:</label>
+					</th>
+					<td>
+						<input type="text" name="client_phone" />
+					</td>
+				</tr>
+			</tbody>
+			</table>
+			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Add New User" /></p>
+		</form>
 
 		<h2>Current Clients</h2>
-
 		<table class="wp-list-table widefat fixed clients" cellspacing="0">
 			<thead>
 				<tr>
@@ -94,39 +162,35 @@ class justaquit {
 				</tr>
 			</thead>
 			<tbody id="the-list" class="list:client">
-		<?php
-		global $wpdb;
-		$query = "SELECT * FROM $wpdb->clients";
-		$clients = $wpdb->get_results($query);
-		foreach( $clients as $client ):
-		?>
+<?php
+	global $wpdb;
+	$query = "SELECT * FROM $wpdb->clients";
+	$clients = $wpdb->get_results($query);
+	foreach( $clients as $client ):
+?>
 				<tr class="alternate">
 					<th scope="row" class="column-id"><?php $client->ID ?></th>
 					<td class="name column-name"><strong><?php $client->client_name ?></strong></td>
-					<td class="email column-email"><a href="<?php echo $client->client_email ?>" title="E-mail: <?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
+					<td class="email column-email"><a href="<?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
 					<td class="phone column-phone"><?php echo $client->client_phone ?></td>
 					<td class="domains column-domains">
-		<?php
-			global $wpdb;
-			$query = "SELECT * FROM $wpdb->clientdomain WHERE client_id = $client->ID";
-			$domains = $wpdb->get_results($query);
-			$count = 0;
-			foreach( $domains as $domain ){
-				$count++;
-			}
-			echo $count;
-		?>
+<?php
+		global $wpdb;
+		$query = "SELECT * FROM $wpdb->clientdomain WHERE client_id = $client->ID";
+		$domains = $wpdb->get_var( $wpdb->prepare( $query ) );
+		echo $domains;
+?>
 					</td>
 					<td class="author column-author">
-		<?php
-			$author = get_userdata( $client->client_author );
-			echo $author->display_name;
-		?>
+<?php
+		$author = get_userdata( $client->client_author );
+		echo $author->display_name;
+?>
 					</td>
 				</tr>
-		<?php
-		foreach;
-		?>
+<?php
+	foreach;
+?>
 			</tbody>
 		</table>
 	</div>
@@ -238,7 +302,7 @@ class justaquit {
 				</tr>
 			</tbody>
 			</table>
-			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Add New Client" /></p>
+			<p class="submit"><input type="submit" name="submit" class="button-primary" value="Add New Domain" /></p>
 		</form>
 	</div>
 <?php		
