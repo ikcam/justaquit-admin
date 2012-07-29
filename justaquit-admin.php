@@ -14,7 +14,7 @@ License: GPL2
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "1.0.2";
+		$justaquit_db_version = "1.1";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
@@ -35,8 +35,9 @@ License: GPL2
 				database_id mediumint(9) NOT NULL,
 				domain_author mediumint(9) DEFAULT 0 NOT NULL,
 				domain_title text NOT NULL,
-				domain_user varchar(50) NOT NULL,
 				domain_url varchar(55) NOT NULL,
+				linode_did mediumint(9) NOT NULL,
+				linode_rid mediumint(9) NOT NULL,
 				domain_wp tinyint(1) NOT NULL,
 				domain_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
@@ -87,6 +88,14 @@ License: GPL2
 
 		if( $input['virtualHost'] == NULL )
 			$input['virtualHost'] = '/etc/apache2/sites-enabled/';
+
+		if( $input['tablePrefix'] == NULL )
+			$input['tablePrefix'] = 'client_';
+
+		if( $input['userPrefix'] == NULL )
+			$input['userPrefix'] = $input['tablePrefix'];
+
+		$input['dbNameSize'] = (16-strlen($input['tablePrefix']));
 
 		return $input;
 	}
@@ -231,7 +240,23 @@ License: GPL2
 	// Add a new domain
 	function page_adddomain(){
 		function scripts(){
-			echo '<script type="text/javascript" src="'.plugin_dir_url(__FILE__).'javascript/main.jquery.js"></script>';
+			$settings = get_option('justaquit_settings');
+?>
+<script type="text/javascript">
+jQuery(function($){
+	$('#domain_name').keyup(function(){
+		var value = $(this).attr('value');
+		value = value.replace('.', '');
+		value = value.replace('-', '');
+		value = value.replace('_', '');
+		var user = value.substr(0,<?php echo $settings['dbNameSize'] ?>);
+		var name = value.substr(0, 20);
+		$('#db_user').attr( 'value', user );
+		$('#db_name').attr('value', name);
+	});
+});
+</script>
+<?php
 		}
 		add_action('admin_footer', 'scripts');
 ?>
@@ -239,10 +264,57 @@ License: GPL2
 <?php
 		$submit = $_POST['submit'];
 		if( $submit ){
-			$client_id = $_POST['client_id'];
-			$domain_author = $_POST['domain_author'];
-			$domain_title = $_POST['title'];
-			$domain_user = $_POST['domainuser'];
+			$settings = get_option('justaquit_settings');
+			require('Services/Linode.php');
+			$domain_name = $_POST['domain_name'];
+			$linode_did = $_POST['linode_did'];
+			if($_POST['domain_wp'] == TRUE)
+				$domain_wp = 1;
+			else
+				$domain_wp = 0;
+
+			// Create Linode registry
+			if( $linode_did == 9999 ){
+				$domain_fullname = $domain_name;
+				try {
+					$linode = new Services_Linode($settings['linodeAPI']);
+					$linode_did = $linode->domain_create(array('Domain' => $domain_fullname, 'Type' => 'master', 'SOA_Email' => get_option('admin_email') ));
+					$linode_did = $linode_did['DATA'][0]['DomainID'];
+				} catch (Services_Linode_Exception $e) {
+					echo $e->getMessage();
+				}
+			} else {
+				try {
+					$linode = new Services_Linode($settings['linodeAPI']);
+					$domain_fullname = $linode->domain_list(array('DomainID' => $linode_did));
+					$ip = $domain_fullname['DATA'][0]['TARGET'];
+					$domain_fullname = $domain_fullname['DATA'][0]['DOMAIN'];
+					$domain_fullname = $domain_name.'.'.$domain_fullaname;
+					$create_domain = $linode->domain_resource_create(array('DomainID' => $linode_did, 'Name' => $domain_fullname, 'Target' => $ip ));
+					$linode_rid = $create_domain['DATA'][0]['ResourceID'];
+				} catch (Services_Linode_Exception $e) {
+					echo $e->getMessage();
+				}
+			}
+
+			$dir = $settings['mailFolder'].$domain_fullname.'/';
+
+			// Create folder
+			$exec = 'mkdir '.$dir;
+			shell_exec($exec);
+
+			if( $domain_wp == 1 ) {
+				// Upload WordPress From SVN
+				$exec = 'cd '.$dir.' && svn co svn co http://svn.automattic.com/wordpress/tags/3.4.1 .';
+				shell_exec($exec);
+
+				// Create Database
+				$query = '';
+			}
+
+			// Change owner of files
+			$exec = 'chown -hR '.$settings['mainUser'].':'.$settings['mainUser'].' '.$dir; 
+			shell_exec($exec);
 		}
 ?>			
 		<h2>Add New Domain</h2>
@@ -273,11 +345,19 @@ License: GPL2
 				</tr>
 				<tr valign="top">
 					<th scope="row">
+						<label>Project Title:</label>
+					</th>
+					<td>
+						<input type="text" name="domain_title" required />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
 						<label>Domain</label>
 					</th>
 					<td>
-						<input type="text" name="domainName" id="domainName" required />
-						<select name="domainID">
+						<input type="text" name="domain_name" id="domain_name" required />
+						<select name="linode_did">
 <?php
 	$settings = get_option('justaquit_settings');
 	$domainID = $settings['linodeDomain'];
@@ -288,9 +368,9 @@ License: GPL2
 		$domainName = $linode->domain_list(array('DomainID' => $domainID));
 		$domainName = $domainName['DATA'];
 		$domainName = $domainName[0]['DOMAIN'];
-} catch (Services_Linode_Exception $e) {
-echo $e->getMessage();
-}
+	} catch (Services_Linode_Exception $e) {
+	echo $e->getMessage();
+	}
 ?>
 							<option value="<?php echo $domainID ?>" selected><?php echo $domainName ?></option>
 							<option value="9999">Custom Domain</option>
@@ -300,11 +380,47 @@ echo $e->getMessage();
 				</tr>
 				<tr valign="top">
 					<th scope="row">
-						<label>Domain Username:</label>
+						<label>Install WordPress</label>
 					</th>
 					<td>
-						<input type="text" name="domainUser" id="domainUser" required />
-						<span class="description">Domain username. Example: client</span>
+						<input type="checkbox" name="domain_wp" checked />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>MySQL Database:</label>
+					</th>
+					<td>
+						<?php echo $settings['tablePrefix'] ?><input type="text" name="db_name" id="db_name" disabled />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>MySQL User</label>
+					</th>
+					<td>
+						<?php echo $settings['userPrefix'] ?><input type="text" name="db_user" id="db_user" disabled />
+					</td>
+				</tr>
+				<tr valign="top">
+<?php
+function get_data($url) {
+	$ch = curl_init();
+	$timeout = 5;
+	curl_setopt($ch,CURLOPT_URL,$url);
+	curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+	curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,$timeout);
+	$data = curl_exec($ch);
+	curl_close($ch);
+	return $data;
+}
+$db_password = get_data('http://www.makeagoodpassword.com/password/strong/');
+?>
+					<th scope="row">
+						<label>MySQL Password:</label>
+					</th>
+					<td>
+						<input type="text" name="db_password" value="<?php echo $db_password ?>" />
 					</td>
 				</tr>
 				<tr valign="top">
@@ -360,6 +476,10 @@ echo $e->getMessage();
 	}
 
 	function page_settings(){
+		function scripts(){
+			echo '<script type="text/javascript" src="'.plugin_dir_url(__FILE__).'javascript/main.jquery.js"></script>';
+		}
+		add_action('admin_footer', 'scripts');
 ?>
 	<div class="wrap">
 		<h2>JustAquit Admin Settings</h2>
@@ -439,6 +559,22 @@ try {
 						<span class="description">Tailing slash require.</span>
 					</td>
 				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>Table Prefix:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[tablePrefix]" id="tablePrefix" value="<?php echo $settings['tablePrefix'] ?>" />
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row">
+						<label>User Prefix:</label>
+					</th>
+					<td>
+						<input type="text" name="justaquit_settings[userPrefix]" id="userPrefix" value="<?php echo $settings['userPrefix'] ?>" />
+					</td>
+				</tr>
 			</tbody>
 			</table>
 			<p class="submit"><input type="submit" value="<?php _e('Save Changes') ?>" class="button-primary" /></p>
@@ -451,8 +587,8 @@ try {
 
 function justaquit_init(){
 	add_menu_page( 'JustAquit', 'JustAquit', 'administrator', 'aquit', array('justaquit', 'page_main'), '', 59 );
-	add_submenu_page( 'aquit', 'Add Client', 'Add Client', 'administrator', 'aquit_addclient', array( 'justaquit', 'page_addclient' ) );
-	add_submenu_page( 'aquit', 'Add Domain', 'Add Domain', 'administrator', 'aquit_adddomain', array( 'justaquit', 'page_adddomain' ) );
+	add_submenu_page( 'aquit', 'Manage Clients', 'Manage Clients', 'administrator', 'aquit_addclient', array( 'justaquit', 'page_addclient' ) );
+	add_submenu_page( 'aquit', 'Manage Domains', 'Manage Domains', 'administrator', 'aquit_adddomain', array( 'justaquit', 'page_adddomain' ) );
 	add_submenu_page( 'aquit', 'Settings', 'Settings', 'administrator', 'aquit_settings', array( 'justaquit', 'page_settings' ) );
 	add_action('admin_init', array('justaquit', 'settings_register'));
 }
