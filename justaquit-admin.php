@@ -292,7 +292,7 @@ License: GPL2
 					<td>
 						<input type="number" max="31" min="0" name="domain_date_day" placeholder="Day" />&nbsp;-&nbsp;
 						<input type="number" max="12" min="0" name="domain_time_month" placeholder="Month" />&nbsp;-&nbsp;
-						<input type="number" min="2012" name="domain_time_year" value="<?php date('Y', current_time('mysql') ) ?>" placeholder="Year" />
+						<input type="number" min="2012" name="domain_time_year" value="<?php echo date('Y',current_time('mysql')); ?>" placeholder="Year" />
 					</td>
 				</tr>
 			</tbody>
