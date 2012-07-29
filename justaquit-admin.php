@@ -273,6 +273,24 @@ License: GPL2
 					</th>
 					<td>
 						<input type="text" name="domain" required />
+						<select name="domainID">
+<?php
+	$domainID = get_option('justaquit_settings');
+	$domainID = $domainID['linodeDomain'];
+
+	require('Services/Linode.php');
+	try {
+		$linode = new Services_Linode('apikey');
+		$domainName = $linode->linode_list(array('DomainID' => $domainID));
+		$domainName = $domainName['DATA'];
+		$domainName = $domainName['DOMAIN'];
+} catch (Services_Linode_Exception $e) {
+echo $e->getMessage();
+}
+?>
+							<option selected value="<?php echo $domainID ?>"><?php echo $domainName ?></option>
+							<option value="9999">Custom Domain</option>
+						</select>
 						<span class="description">User domain or subdomain. Example: DOMAIN.justaquit.net</span>
 					</td>
 				</tr>
