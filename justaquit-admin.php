@@ -9,9 +9,7 @@ Author URI: http://ikcam.com
 License: GPL2
 */
 ?>
-
-<?php 
-class justaquit {
+<?php class justaquit {
 	// Install
 	function install(){
 		global $wpdb;
@@ -86,19 +84,12 @@ class justaquit {
 			$client_registered = $_POST['client_registered'];
 
 			global $wpdb;
-			$query = "SELECT * FROM $wpdb->clients WHERE client_email = $client_email";
-			$procced = $wpdb->get_var( $wpdb->prepare( $query ) );
+			$query = "SELECT * FROM $wpdb->clients WHERE client_email = %s";
+			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client_email ) );
 			if( $procced == 0 ){
-				$client = array(
-						'client_author'     => $client_author,
-						'client_name'       => $client_name,
-						'client_email'      => $client_email,
-						'client_address'    => $client_address,
-						'client_phone'      => $client_phone,
-						'client_registered' => $client_registered
-					);
-				$table = $wpdb->prefix.'clients';
-				$wpdb->insert( $table, $client );
+				$query = "INSERT INTO $wpdb->clients ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( $client_author, $client_name, $client_email, $client_address, $client_phone, $client_registered )";
+				$result = $wpdb->query($query);
+				
 				echo '<div id="message" class="updated fade"><p>User created successfully.</p></div>';
 			} else {
 				echo '<div id="message" class="error fade"><p>User already exists.</p></div>';
@@ -189,7 +180,7 @@ class justaquit {
 					</td>
 				</tr>
 <?php
-	foreach;
+	endforeach;
 ?>
 			</tbody>
 		</table>
