@@ -31,14 +31,56 @@ class justaquit {
 
 	// Add a new client
 	function page_addclient(){
-		$continue = $_POST['submit'];
-		if( $continue ){
-			$domain = $_POST['domain'];
-		}
 ?>
 	<div class="wrap">
+<?php
+		$submit = $_POST['submit'];
+		if( $submit ){
+			$domain = $_POST['domain'];
+			$domain = esc_attr($domain);
+
+			// Create folder
+			$query = 'mkdir /home/aqt/'.$domain;
+			$result = shell_exec($query);
+
+			// Change folder permissions
+			$query = 'chown aqtclients:aqtclients /home/aqt/'.$domain;
+			$result = shell_exec($query);
+?>
+		<h2>Result</h2>
+		<table class="form-table">
+		<tbody>
+			<tr valign="top">
+				<th scope="row">
+					URL:
+				</th>
+				<td>
+					<a href="<?php echo $domain ?>" target="_blank"><?php echo $domain ?></a>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					FTP User:
+				</th>
+				<td>
+					aqtclients
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">
+					FTP Password:
+				</th>
+				<td>
+					******
+				</td>
+			</tr>
+		</tbody>
+		</table>
+<?php
+		}
+?>			
 		<h2>Add New Client</h2>
-		<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>">
+		<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>?page=aquit_addclient">
 			<table class="form-table">
 			<tbody>
 				<tr valign="top">
