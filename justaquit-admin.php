@@ -277,10 +277,10 @@ $(function(){
 				</tr>
 				<tr valign="top">
 					<th scope="row">
-						<label for="domain">Domain</label>
+						<label>Domain</label>
 					</th>
 					<td>
-						<input type="text" name="domain" required />
+						<input type="text" name="domainName" id="domainName" required />
 						<select name="domainID">
 <?php
 	$settings = get_option('justaquit_settings');
@@ -304,10 +304,10 @@ echo $e->getMessage();
 				</tr>
 				<tr valign="top">
 					<th scope="row">
-						<label for="username">Domain Username:</label>
+						<label>Domain Username:</label>
 					</th>
 					<td>
-						<input type="text" name="username" required />
+						<input type="text" name="domainUser" id="domainUser" required />
 						<span class="description">Domain username. Example: client</span>
 					</td>
 				</tr>
