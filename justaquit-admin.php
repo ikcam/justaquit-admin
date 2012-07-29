@@ -101,7 +101,7 @@ License: GPL2
 			$query = "SELECT * FROM $table WHERE client_email = %s";
 			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client_email ) );	
 			if( $procced == 0 ){
-				$query = "INSERT INTO $wpdb->clients ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( %d, %s, %s, %s, %s, %s )";
+				$query = "INSERT INTO $table ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( %d, %s, %s, %s, %s, %s )";
 				$wpdb->query( $wpdb->prepare( $query, array( $client_author, $client_name, $client_email, $client_address, $client_phone, $client_registered ) ) );
 				
 				echo '<div id="message" class="updated fade"><p>User created successfully.</p></div>';
