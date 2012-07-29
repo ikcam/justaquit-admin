@@ -40,7 +40,7 @@ class justaquit {
 			$domain = esc_attr($domain);
 
 			// Create folder
-			$query = 'mkdir /home/aqt/'.$domain;
+			$query = 'mkdir /home/aqtclients/'.$domain;
 			$result = shell_exec($query);
 
 			// Change folder permissions
