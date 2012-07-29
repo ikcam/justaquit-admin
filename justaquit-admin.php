@@ -41,7 +41,7 @@ License: GPL2
 				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
 			);";
-			$table_name = $wpdb->prfix."databases";
+			$table_name = $wpdb->prefix."databases";
 			$sql .= "CREATE TABLE $table_name(
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				db_name varchar(30) NOT NULL,
