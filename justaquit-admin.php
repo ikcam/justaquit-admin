@@ -276,7 +276,7 @@ License: GPL2
 						<select name="domainID">
 <?php
 	$settings = get_option('justaquit_settings');
-	$domainID = $settins['linodeDomain'];
+	$domainID = $settings['linodeDomain'];
 
 	require('Services/Linode.php');
 	try {
