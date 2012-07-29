@@ -14,7 +14,7 @@ License: GPL2
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
-		$justaquit_db_version = "1.0.1";
+		$justaquit_db_version = "1.0.2";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
 			$table_name = $wpdb->prefix."clients";
@@ -37,6 +37,7 @@ License: GPL2
 				domain_title text NOT NULL,
 				domain_user varchar(50) NOT NULL,
 				domain_url varchar(55) NOT NULL,
+				domain_wp tinyint(1) NOT NULL,
 				domain_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
@@ -79,7 +80,7 @@ License: GPL2
 			$input['linodeDomain'] = '';
 
 		if( $input['mainFolder'] == NULL )
-			$input['mainFolder'] = '';
+			$input['mainFolder'] = '/home/';
 
 		if( $input['mainUser'] == NULL )
 			$input['mainUser'] = 'root';
@@ -234,25 +235,10 @@ License: GPL2
 <?php
 		$submit = $_POST['submit'];
 		if( $submit ){
-			global $wpdb;
-			$table = $wpdb->prefix.'domains';
-			$query = "SELECT * FROM $table WHERE domain_url = %s";
-			$procced = $wpdb->get_var( $wpdb->prepare( $query, $domain_url ) );
-			if( $procced ){
-
-			} else {
-				$domain = $_POST['domain'];
-				$domain = esc_attr($domain);
-				
-				// Create folder
-				$query = 'mkdir /home/aqtclients/'.$domain;
-				$result = shell_exec($query);	
-			}
-
-
-			// Change folder permissions
-			$query = 'chown aqtclients:aqtclients /home/aqtclients/'.$domain;
-			$result = shell_exec($query);
+			$client_id = $_POST['client_id'];
+			$domain_author = $_POST['domain_author'];
+			$domain_title = $_POST['title'];
+			$domain_user = $_POST['domainuser'];
 		}
 ?>			
 		<h2>Add New Domain</h2>
@@ -304,9 +290,9 @@ License: GPL2
 						<label>Presentation Date:</label>
 					</th>
 					<td>
-						<input type="number" max="31" min="0" name="domain_date_day" />&nbsp;-&nbsp;
-						<input type="number" max="12" min="0" name="domain_time_month" />&nbsp;-&nbsp;
-						<input type="number" min="2012" name="domain_time_year" />
+						<input type="number" max="31" min="0" name="domain_date_day" placeholder="Day" />&nbsp;-&nbsp;
+						<input type="number" max="12" min="0" name="domain_time_month" placeholder="Month" />&nbsp;-&nbsp;
+						<input type="number" min="2012" name="domain_time_year" value="<?php date('Y', current_time('mysql') ) ?>" placeholder="Year" />
 					</td>
 				</tr>
 			</tbody>
