@@ -53,7 +53,7 @@ class justaquit {
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			dbDelta($sql);
 
-			add_option("justaquit_db_version", $justaquit_db_version);
+			update_option( "justaquit_db_version", $justaquit_db_version );
 		}
 	}
 
@@ -79,6 +79,56 @@ class justaquit {
 ?>
 	<div class="wrap">
 		<h2>Add New Client</h2>
+
+		<h2>Current Clients</h2>
+
+		<table class="wp-list-table widefat fixed clients" cellspacing="0">
+			<thead>
+				<tr>
+					<th scope="col" id="id" class="manage-column column-username"><span>ID</span></th>
+					<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
+					<th scope="col" id="email" class="manage-column column-email"><span>E-mail</span></th>
+					<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
+					<th scope="col" id="domains" class="manage-column column-domains"><span>Domains</span></th>
+					<th scope="col" id="author" class="manage-author column-author"><span>Author</span></th>
+				</tr>
+			</thead>
+			<tbody id="the-list" class="list:client">
+		<?php
+		global $wpdb;
+		$query = "SELECT * FROM $wpdb->clients";
+		$clients = $wpdb->get_results($query);
+		foreach( $clients as $client ):
+		?>
+				<tr class="alternate">
+					<th scope="row" class="column-id"><?php $client->ID ?></th>
+					<td class="name column-name"><strong><?php $client->client_name ?></strong></td>
+					<td class="email column-email"><a href="<?php echo $client->client_email ?>" title="E-mail: <?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
+					<td class="phone column-phone"><?php echo $client->client_phone ?></td>
+					<td class="domains column-domains">
+		<?php
+			global $wpdb;
+			$query = "SELECT * FROM $wpdb->clientdomain WHERE client_id = $client->ID";
+			$domains = $wpdb->get_results($query);
+			$count = 0;
+			foreach( $domains as $domain ){
+				$count++;
+			}
+			echo $count;
+		?>
+					</td>
+					<td class="author column-author">
+		<?php
+			$author = get_userdata( $client->client_author );
+			echo $author->display_name;
+		?>
+					</td>
+				</tr>
+		<?php
+		foreach;
+		?>
+			</tbody>
+		</table>
 	</div>
 <?php
 	}
