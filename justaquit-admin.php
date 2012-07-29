@@ -352,12 +352,16 @@ License: GPL2
 <?php
 require('Services/Linode.php');
 
+
 try {
 	$linode = new Services_Linode('LbMPSPcoqfaTuqxySC5Fv92CjlQmY3nrlovxdo6C2xDwgBDmWmdoZtMeWMf2kIa2');
 	$domains = $linode->domain_list();
 	$domains = $domains['DATA'];
 	foreach( $domains as $domain ){
-		echo '<option value="'.$domain['DOMAINID'].'">'.$domain['DOMAIN'].'</option>';
+		if( $settings['linodeDomain'] == $domain['DOMAINID'] )
+			echo '<option selected value="'.$domain['DOMAINID'].'">'.$domain['DOMAIN'].'</option>';
+		else
+			echo '<option value="'.$domain['DOMAINID'].'">'.$domain['DOMAIN'].'</option>';
 	}
 } catch (Services_Linode_Exception $e) {
     echo $e->getMessage();
