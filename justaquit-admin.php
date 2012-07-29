@@ -231,6 +231,14 @@ License: GPL2
 	// Add a new domain
 	function page_adddomain(){
 ?>
+	<script type="text/javascript">
+$(function(){
+	$('#domainName').keydown(function(){
+		var value = $this.attr('value');
+		$('#domainUser').attr( 'value', value );
+	})
+})
+	</script>
 	<div class="wrap">
 <?php
 		$submit = $_POST['submit'];
