@@ -281,14 +281,14 @@ License: GPL2
 	require('Services/Linode.php');
 	try {
 		$linode = new Services_Linode($settings['linodeAPI']);
-		$domainName = $linode->linode_list(array('DomainID' => $domainID));
+		$domainName = $linode->domain_list(array('DomainID' => $domainID));
 		$domainName = $domainName['DATA'];
 		$domainName = $domainName['DOMAIN'];
 } catch (Services_Linode_Exception $e) {
 echo $e->getMessage();
 }
 ?>
-							<option selected value="<?php echo $domainID ?>"><?php echo $domainName ?></option>
+							<option value="<?php echo $domainID ?>" selected><?php echo $domainName ?></option>
 							<option value="9999">Custom Domain</option>
 						</select>
 						<span class="description">User domain or subdomain. Example: DOMAIN.justaquit.net</span>
