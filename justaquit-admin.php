@@ -15,7 +15,8 @@ class justaquit {
 	// Install
 	function install(){
 		global $wpdb;
-		$sql = "CREATE TABLE $wpdb->clients (
+		$table_name = $wpdb->prefix."clients";
+		$sql = "CREATE TABLE $table_name (
 			ID mediumint(9) NOT NULL AUTO_INCREMENT,
 			client_author mediumint(9) DEFAULT 0 NOT NULL,
 			client_name varchar(250) NOT NULL,
@@ -24,7 +25,8 @@ class justaquit {
 			client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			UNIQUE KEY ID (ID)
 		);";
-		$sql .= "CREATE TABLE $wpdb->domains (
+		$table_name = $wpdb->prefix."domains";
+		$sql .= "CREATE TABLE $table_name (
 			ID mediumint(9) NOT NULL AUTO_INCREMENT,
 			client_id mediumint(9) NOT NULL,
 			database_id mediumint(9) NOT NULL,
@@ -36,7 +38,8 @@ class justaquit {
 			domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 			UNIQUE KEY ID (ID)
 		);";
-		$sql .= "CREATE TABLE $wpdb->clientdomain (
+		$table_name = $wpdb->prefix."clientdomain";
+		$sql .= "CREATE TABLE $table_name (
 			clientdomain_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			client_id mediumint(9) NOT NULL,
 			domain_id mediumint(9) NOT NULL
