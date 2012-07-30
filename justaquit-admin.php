@@ -581,7 +581,7 @@ require('Services/Linode.php');
 
 
 try {
-	$linode = new Services_Linode('LbMPSPcoqfaTuqxySC5Fv92CjlQmY3nrlovxdo6C2xDwgBDmWmdoZtMeWMf2kIa2');
+	$linode = new Services_Linode($settings['linodeAPI']);
 	$domains = $linode->domain_list();
 	$domains = $domains['DATA'];
 	foreach( $domains as $domain ){
