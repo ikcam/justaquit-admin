@@ -10,15 +10,15 @@ License: GPL2
 */
 ?>
 <?php class justaquit {
-	// Install
+	// Function install
 	function install(){
 		global $wpdb;
 		global $justaquit_db_version;
 		$justaquit_db_version = "1.1";
 		$installed_ver = get_option( "justaquit_db_version" );
 		if( $installed_ver != $justaquit_db_version ) {
-			$table_name = $wpdb->prefix."clients";
-			$sql = "CREATE TABLE $table_name (
+			$table = $wpdb->prefix."clients";
+			$sql = "CREATE TABLE $table (
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				client_author mediumint(9) DEFAULT 0 NOT NULL,
 				client_name varchar(250) NOT NULL,
@@ -28,13 +28,14 @@ License: GPL2
 				client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
 			);";
-			$table_name = $wpdb->prefix."domains";
-			$sql .= "CREATE TABLE $table_name (
+			$table = $wpdb->prefix."domains";
+			$sql .= "CREATE TABLE $table (
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				client_id mediumint(9) NOT NULL,
 				database_id mediumint(9) NOT NULL,
 				domain_author mediumint(9) DEFAULT 0 NOT NULL,
 				domain_title text NOT NULL,
+				domain_status varchar(20) NOT NULL,
 				domain_url varchar(55) NOT NULL,
 				linode_did mediumint(9) NOT NULL,
 				linode_rid mediumint(9) NOT NULL,
@@ -43,8 +44,8 @@ License: GPL2
 				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 				UNIQUE KEY ID (ID)
 			);";
-			$table_name = $wpdb->prefix."databases";
-			$sql .= "CREATE TABLE $table_name(
+			$table = $wpdb->prefix."databases";
+			$sql .= "CREATE TABLE $table(
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				db_name varchar(30) NOT NULL,
 				db_user varchar(16) NOT NULL,
@@ -53,8 +54,8 @@ License: GPL2
 				domain_id mediumint(9) NOT NULL,
 				UNIQUE KEY ID (ID)
 			)";
-			$table_name = $wpdb->prefix."clientdomain";
-			$sql .= "CREATE TABLE $table_name (
+			$table = $wpdb->prefix."clientdomain";
+			$sql .= "CREATE TABLE $table (
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
 				client_id mediumint(9) NOT NULL,
 				domain_id mediumint(9) NOT NULL,
@@ -93,9 +94,9 @@ License: GPL2
 			$input['tablePrefix'] = 'client_';
 
 		if( $input['userPrefix'] == NULL )
-			$input['userPrefix'] = $input['tablePrefix'];
+			$input['userPrefix'] = 'client_';
 
-		$input['dbNameSize'] = (16-strlen($input['tablePrefix']));
+		$input['dbUserSize'] = (16-strlen($input['tablePrefix']));
 
 		return $input;
 	}
@@ -106,8 +107,8 @@ License: GPL2
 	<div class="wrap">
 		<h2>JustAquit Admin Options</h2>
 		<ul>
-			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Add New Client</a></li>
-			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Add New Domain</a></li>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Manage Clients</a></li>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Manage Domains</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_settings">Settings</a></li>
 		</ul>
 	</div>
@@ -116,23 +117,23 @@ License: GPL2
 
 	// Add a new client
 	function page_addclient(){
-		$submit = $_POST['submit'];
-		if( $submit ){
-			$client_author = $_POST['client_author'];
-			$client_name = $_POST['client_name'];
-			$client_email = $_POST['client_email'];
-			$client_address = $_POST['client_address'];
-			$client_phone = $_POST['client_phone'];
-			$client_registered = $_POST['client_registered'];
+		if( $_POST['submit'] ){
+			$client = array(
+					'author'     => $_POST['client_author'],
+					'name'       => $_POST['client_name'],
+					'email'      => $_POST['client_email'],
+					'address'    => $_POST['client_address'],
+					'phone'      => $_POST['client_phone'],
+					'registered' => $_POST['client_registered']
+				);
 
 			global $wpdb;
 			$table = $wpdb->prefix.'clients';
 			$query = "SELECT * FROM $table WHERE client_email = %s";
-			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client_email ) );	
+			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client['email'] ) );	
 			if( $procced == 0 ){
 				$query = "INSERT INTO $table ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( %d, %s, %s, %s, %s, %s )";
-				$wpdb->query( $wpdb->prepare( $query, array( $client_author, $client_name, $client_email, $client_address, $client_phone, $client_registered ) ) );
-				
+				$wpdb->query( $wpdb->prepare( $query, $client ) );
 				echo '<div id="message" class="updated fade"><p>User created successfully.</p></div>';
 			} else {
 				echo '<div id="message" class="error"><p>User already exists. Try again.</p></div>';
@@ -237,88 +238,88 @@ License: GPL2
 <?php
 	}
 
-	// Add a new domain
+	// Manage Domain
 	function page_adddomain(){
+		global $wpdb;
+		$settings = get_option('justaquit_settings');
 		function scripts(){
 			$settings = get_option('justaquit_settings');
 ?>
-<script type="text/javascript">
-jQuery(function($){
-	$('#domain_name').keyup(function(){
-		var value = $(this).attr('value');
-		value = value.replace('.', '');
-		value = value.replace('-', '');
-		value = value.replace('_', '');
-		var user = value.substr(0,<?php echo $settings['dbNameSize'] ?>);
-		var name = value.substr(0, 20);
-		$('#db_user').attr( 'value', user );
-		$('#db_name').attr('value', name);
-	});
-});
-</script>
+			<script type="text/javascript">
+				jQuery(function($){
+					$('#domain_name').keyup(function(){
+						var value = $(this).attr('value');
+						value = value.replace('.', '');
+						value = value.replace('-', '');
+						value = value.replace('_', '');
+						var user = value.substr(0,<?php echo $settings['dbUserSize'] ?>);
+						var name = value.substr(0, 20);
+						$('#db_user').attr( 'value', user );
+						$('#db_name').attr('value', name);
+					});
+				});
+			</script>
 <?php
 		}
 		add_action('admin_footer', 'scripts');
 ?>
 	<div class="wrap">
 <?php
-		$submit = $_POST['submit'];
-		if( $submit ){
-			$settings = get_option('justaquit_settings');
-			require('Services/Linode.php');
-			$domain_name = $_POST['domain_name'];
-			$linode_did = $_POST['linode_did'];
-			if($_POST['domain_wp'] == TRUE)
+		if( $_POST['submit'] ){
+			$client_id = $_POST['client_id'];	
+			if( $_POST['domain_wp'] == true ){
 				$domain_wp = 1;
-			else
-				$domain_wp = 0;
+				$db_name = $settings['tablePrefix'].$_POST['db_name'];
+				$db_user = $settings['userPrefix'].$_POST['db_user'];
+				$db_password = $_POST['db_password'];
 
-			// Create Linode registry
-			if( $linode_did == 9999 ){
-				$domain_fullname = $domain_name;
-				try {
-					$linode = new Services_Linode($settings['linodeAPI']);
-					$linode_did = $linode->domain_create(array('Domain' => $domain_fullname, 'Type' => 'master', 'SOA_Email' => get_option('admin_email') ));
-					$linode_did = $linode_did['DATA'][0]['DomainID'];
-				} catch (Services_Linode_Exception $e) {
-					echo $e->getMessage();
-				}
-			} else {
-				try {
-					$linode = new Services_Linode($settings['linodeAPI']);
-					$domain_fullname = $linode->domain_list(array('DomainID' => $linode_did));
-					$ip = $domain_fullname['DATA'][0]['TARGET'];
-					$domain_fullname = $domain_fullname['DATA'][0]['DOMAIN'];
-					$domain_fullname = $domain_name.'.'.$domain_fullaname;
-					$create_domain = $linode->domain_resource_create(array('DomainID' => $linode_did, 'Name' => $domain_fullname, 'Target' => $ip ));
-					$linode_rid = $create_domain['DATA'][0]['ResourceID'];
-				} catch (Services_Linode_Exception $e) {
-					echo $e->getMessage();
-				}
-			}
+				$table = $wpdb->prefix.'databases';
+				
+				//Verify if database exists
+				$i = 1;
+				do{
+					$query = "SELECT * FROM $table WHERE db_name = %s";
+					$check = $wpdb->get_var( $wpdb->prepare($query, $db_name) );
+					if( $check!= NULL )
+						$db_name = $db_name.$i; // Rename DB
+					$i++;
+				} while ( $check != NULL );
 
-			$dir = $settings['mailFolder'].$domain_fullname.'/';
+				// Verify if user exists
+				$i = 1;
+				do{
+					$query = "SELECT * FROM $table WHERE db_user = %s";
+					$check = $wpdb->get_var( $wpdb->prepare($query, $db_user) );
+					if( $check != NULL )
+						$db_user = substr($db_user, 0, 15).$i;
+					$i++;
+				} while ( $check != NULL );
 
-			// Create folder
-			$exec = 'mkdir '.$dir;
-			shell_exec($exec);
-
-			if( $domain_wp == 1 ) {
-				// Upload WordPress From SVN
-				$exec = 'cd '.$dir.' && svn co svn co http://svn.automattic.com/wordpress/tags/3.4.1 .';
-				shell_exec($exec);
+				// Add info to our database
+				$query = "INSERT INTO $table ( db_name, db_user, db_password, client_id ) VALUES ( %s, %s, %s, %d ) ";
+				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user, $db_password, $client_id) );
 
 				// Create Database
-				$query = '';
-			}
+				$query = "CREATE DATABASE $db_name;";
+				$wpdb->query( $query );
 
-			// Change owner of files
-			$exec = 'chown -hR '.$settings['mainUser'].':'.$settings['mainUser'].' '.$dir; 
-			shell_exec($exec);
+				// Create User
+				$query = "CREATE USER %s@'localhost' IDENTIFIED BY  '%s';";
+				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
+
+				// Grant usage
+				$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  '%s';";
+				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
+
+				// Grant access
+				$query = "GRANT ALL PRIVILEGES ON  %s . * TO  %s@'localhost';";
+				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user) );
+			} else
+				$domain_wp = 0;
 		}
 ?>			
 		<h2>Add New Domain</h2>
-		<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>?page=aquit_addclient">
+		<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ?>?page=aquit_adddomain">
 			<input type="hidden" name="domain_author" value="<?php echo get_current_user_id() ?>" />
 			<input type="hidden" name="domain_registered" value="<?php echo current_time('mysql') ?>" />
 			<table class="form-table">
@@ -391,7 +392,7 @@ jQuery(function($){
 						<label>MySQL Database:</label>
 					</th>
 					<td>
-						<?php echo $settings['tablePrefix'] ?><input type="text" name="db_name" id="db_name" disabled />
+						<?php echo $settings['tablePrefix'] ?><input type="text" name="db_name" id="db_name" readonly />
 					</td>
 				</tr>
 				<tr valign="top">
@@ -399,7 +400,7 @@ jQuery(function($){
 						<label>MySQL User</label>
 					</th>
 					<td>
-						<?php echo $settings['userPrefix'] ?><input type="text" name="db_user" id="db_user" disabled />
+						<?php echo $settings['userPrefix'] ?><input type="text" name="db_user" id="db_user" readonly />
 					</td>
 				</tr>
 				<tr valign="top">
