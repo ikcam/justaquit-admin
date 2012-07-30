@@ -81,6 +81,9 @@ License: GPL2
 		if( $input['linodeDomain'] == NULL )
 			$input['linodeDomain'] = '';
 
+		if( $input['mainIP'] == NULL )
+			$input['mainIP'] = '0.0.0.0';
+
 		if( $input['mainFolder'] == NULL )
 			$input['mainFolder'] = '/home/';
 
@@ -252,11 +255,17 @@ License: GPL2
 						value = value.replace('.', '');
 						value = value.replace('-', '');
 						value = value.replace('_', '');
+						value = value.replace(' ', '');
 						var user = value.substr(0,<?php echo $settings['dbUserSize'] ?>);
 						var name = value.substr(0, 20);
 						$('#db_user').attr( 'value', user );
 						$('#db_name').attr('value', name);
 					});
+					$('#domain_name').keyup(function(){
+						var value = $(this).attr('value');
+						value = value.replace(' ', '');
+						$(this).attr('value', value);
+					})
 				});
 			</script>
 <?php
@@ -300,22 +309,80 @@ License: GPL2
 				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user, $db_password, $client_id) );
 
 				// Create Database
+				$wpdb->show_errors();
 				$query = "CREATE DATABASE $db_name;";
 				$wpdb->query( $query );
 
 				// Create User
-				$query = "CREATE USER %s@'localhost' IDENTIFIED BY  '%s';";
+				$query = "CREATE USER %s@'localhost' IDENTIFIED BY  %s;";
 				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
 
 				// Grant usage
-				$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  '%s';";
+				$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
 				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
-
+				$wpdb->print_error();
 				// Grant access
-				$query = "GRANT ALL PRIVILEGES ON  %s . * TO  %s@'localhost';";
-				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user) );
-			} else
+				$query = "GRANT ALL PRIVILEGES ON  `$db_name` . * TO  %s@'localhost';";
+				$wpdb->query( $wpdb->prepare($query, $db_user) );
+				$wpdb->print_error();
+			} else {
 				$domain_wp = 0;
+			}
+			
+			$linode_did = $_POST['linode_did'];
+			$domain_name = $_POST['domain_name'];
+			$admin_email = get_option('admin_email');
+
+			if($settings['linodeAPI'] != ''){
+				if( $linode_did == 9999 ){
+					$table = $wpdb->prefix.'domains';
+					$query = "SELECT * FROM $table WHERE domain_url = %s";
+					$check = $wpdb->get_var( $wpdb->prepare($query, $domain_name) );
+					if( $check == NULL ){
+						// If currently doesn't exist create it
+						require('Services/Linode.php');
+						try {
+							$linode = new Services_Linode($settings['linodeAPI']});
+							$linode = $linode->domain_create( array( 'Domain' => $domain_name, 'Type' => 'master', 'SOA_Email' => $admin_email ) );
+							$linode_did = $linode['DATA'][0]['DomainID'];
+							$linode_rid = 0;
+						} catch (Services_Linode_Exception $e) {
+							echo $e->getMessage();
+						}
+						$message = '<ul><li>Domain added to Linode sucessfully.</li>';
+					} else {
+						$message = '<ul><li>Domain already exists on Linode. Try another name.</li>';
+					}
+				} else {
+					require('Services/Linode.php');
+					try {
+						$linode = new Services_Linode($settings['linodeAPI']);
+						$linode = $linode->domain_list( array( 'DomainID' => $settings['linode_did'] ) );
+						$linode = $linode['DATA'][0]['DOMAIN'];
+						$domain_name = $domain_name.'.'.$linode;
+					} catch (Services_Linode_Exception $e) {
+						echo $e->getMessage();
+					}
+					$i=1;
+					do {
+						$table = $wpdb->prefix.'domains';
+						$query = "SELECT * FROM $table WHERE domain_url = %s";
+						$check = $wpdb->get_var( $wpdb->prepare($query, $domain_name) );
+						if( $check != NULL )
+							$domain_name = $domain_name.$i;
+						$i++;
+					} while( $check != NULL );
+					// Create subdomain at Linode
+					try {
+						$linode = new Services_Linode($settings['linodeAPI']);
+						$linode = $linode->domain_resource_create( array( 'DomainID' => $linode_did, 'Type' => 'a', 'Name' => $domain_name, 'Target' => $settings['mainIP'] ) );
+						$linode_rid = $linode['DATA'][0]['ResourceID'];
+					} catch (Services_Linode_Exception $e) {
+						echo $e->getMessage();
+					}
+					$message = '<ul><li>Subdomain '.$domain_name.' has been created.</li>'; 
+				}
+			}
 		}
 ?>			
 		<h2>Add New Domain</h2>
@@ -533,6 +600,14 @@ try {
 <?php
 	}
 ?>
+				<tr valign="top">
+					<th scope="row">
+						<label>Main IP Address</label>
+					</th>
+					<td>
+						<input type="text" value="justaquit_settings[mainIP]" value="<?php echo $settings['mainIP'] ?>" />
+					</td>
+				</tr>
 				<tr vlalign="top">
 					<th scope="row">
 						<label>Main Folder:</label>
