@@ -308,8 +308,12 @@ License: GPL2
 				$query = "INSERT INTO $table ( db_name, db_user, db_password, client_id ) VALUES ( %s, %s, %s, %d ) ";
 				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user, $db_password, $client_id) );
 
+				// Databa base ID
+				$query = "SELECT * FROM $table WHERE db_name = %s AND db_user = %s";
+				$result = $wpdb->get_results( $wpdb->prepare($query, $db_name, $db_user) );
+				$database_id = $result[0]->ID;
+
 				// Create Database
-				$wpdb->show_errors();
 				$query = "CREATE DATABASE $db_name;";
 				$wpdb->query( $query );
 
@@ -320,11 +324,10 @@ License: GPL2
 				// Grant usage
 				$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
 				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
-				$wpdb->print_error();
+
 				// Grant access
 				$query = "GRANT ALL PRIVILEGES ON  `$db_name` . * TO  %s@'localhost';";
 				$wpdb->query( $wpdb->prepare($query, $db_user) );
-				$wpdb->print_error();
 			} else {
 				$domain_wp = 0;
 			}
@@ -342,24 +345,28 @@ License: GPL2
 						// If currently doesn't exist create it
 						require('Services/Linode.php');
 						try {
-							$linode = new Services_Linode($settings['linodeAPI']});
+							$linode = new Services_Linode($settings['linodeAPI']);
 							$linode = $linode->domain_create( array( 'Domain' => $domain_name, 'Type' => 'master', 'SOA_Email' => $admin_email ) );
 							$linode_did = $linode['DATA'][0]['DomainID'];
 							$linode_rid = 0;
 						} catch (Services_Linode_Exception $e) {
 							echo $e->getMessage();
 						}
-						$message = '<ul><li>Domain added to Linode sucessfully.</li>';
+						$proceed = 1;
+						$domain_url = $domain_name;
+						echo '<li>Domain <code>'.$domain_url.'</code> added to Linode sucessfully.</li>';
 					} else {
-						$message = '<ul><li>Domain already exists on Linode. Try another name.</li>';
+						$proceed = 0;
+						$domain_url = $domain_name;
+						echo '<li>Domain <code>'.$domain_url.'</code> already exists on Linode. Try another name.</li>';
 					}
 				} else {
 					require('Services/Linode.php');
 					try {
 						$linode = new Services_Linode($settings['linodeAPI']);
-						$linode = $linode->domain_list( array( 'DomainID' => $settings['linode_did'] ) );
-						$linode = $linode['DATA'][0]['DOMAIN'];
-						$domain_name = $domain_name.'.'.$linode;
+						$linode = $linode->domain_list( array( 'DomainID' => $linode_did ) );
+						$domain_tld = $linode['DATA'][0]['DOMAIN'];
+						$domain_url = $domain_name.'.'.$domain_tld;
 					} catch (Services_Linode_Exception $e) {
 						echo $e->getMessage();
 					}
@@ -367,20 +374,72 @@ License: GPL2
 					do {
 						$table = $wpdb->prefix.'domains';
 						$query = "SELECT * FROM $table WHERE domain_url = %s";
-						$check = $wpdb->get_var( $wpdb->prepare($query, $domain_name) );
+						$check = $wpdb->get_var( $wpdb->prepare($query, $domain_fullname) );
 						if( $check != NULL )
-							$domain_name = $domain_name.$i;
+							$domain_url = $domain_name.$i.'.'.$domain_tld;
 						$i++;
 					} while( $check != NULL );
 					// Create subdomain at Linode
 					try {
 						$linode = new Services_Linode($settings['linodeAPI']);
-						$linode = $linode->domain_resource_create( array( 'DomainID' => $linode_did, 'Type' => 'a', 'Name' => $domain_name, 'Target' => $settings['mainIP'] ) );
+						$linode = $linode->domain_resource_create( array( 'DomainID' => $linode_did, 'Type' => 'a', 'Name' => $domain_url, 'Target' => $settings['mainIP'] ) );
 						$linode_rid = $linode['DATA'][0]['ResourceID'];
 					} catch (Services_Linode_Exception $e) {
 						echo $e->getMessage();
 					}
-					$message = '<ul><li>Subdomain '.$domain_name.' has been created.</li>'; 
+					$proceed = 1;
+					echo '<li>Subdomain <code>'.$domain_url.'</code> has been created.</li>'; 
+				}
+				if( $proceed = 1 ){
+					// Add info to out database
+					$domain = array(
+							'client_id'     => $client_id,
+							'database_id'   => $database_id,
+							'author'        => $_POST['domain_author'],
+							'title'         => $_POST['domain_title'],
+							'url'           => $domain_url,
+							'registered'    => $_POST['domain_registered'],
+							'wp'            => $domain_wp
+						);
+
+					$table = $wpdb->prefix.'domains';
+					$query = "INSERT INTO $table ( client_id, database_id, domain_author, domain_title, domain_url, domain_registered	, domain_wp  ) VALUES (%d, %d, %d, %s, %s, %s, %d)";
+					$wpdb->query( $wpdb->prepare($query, $domain) );
+
+					$query = "SELECT * FROM $table WHERE domain_url = %s";
+					$result = $wpdb->get_results( $wpdb->prepare($query, $domain_url) );
+					$domain_id = $result[0]->ID;
+
+					$table = $wpdb->prefix.'clientdomain';
+					$query = "INSERT INTO $table ( client_id, domain_id ) VALUES (%d, %d)";
+					$wpdb->query( $wpdb->prepare($query, $client_id, $domain_id) );
+
+					// Create folder
+					$dir = $settings['mainFolder'].$domain_url.'/';
+					$exec = 'mkdir '.$dir;
+					shell_exec($exec);
+
+					echo '<li>Folder created in this location: <code>'.$dir.'</code></li>';
+
+					if( $domain_wp == 1 ){
+						$exec = 'cd '.$dir.' && svn co http://core.svn.wordpress.org/tags/3.4.1 .';
+						shell_exec($exec);
+						// Rename wp-config-sample.php
+						$exec = 'cd '.$dir.' && mv wp-config-sample.php wp-config.php';
+						shell_exec($exec);
+						// Edit wp-config.php
+						$filename = $dir.'wp-config.php';
+						$file = file_get_contents($filename);
+    				file_put_contents($filename, preg_replace('/database_name_here/', $db_name, $file));
+    				file_put_contents($filename, preg_replace('/username_here/', $db_user, $file));
+    				file_put_contents($filename, preg_replace('/password_here/', $db_password, $file));
+    				// Change file Owner
+    				$exec = 'chown -hR '.$settings['mainUser'].':'.$settings['mainUser'].' '.$dir;
+    				shell_exec($exec);
+
+						echo '<li>WordPress hass been installed successfully</li>';
+					}
+
 				}
 			}
 		}
@@ -605,7 +664,7 @@ try {
 						<label>Main IP Address</label>
 					</th>
 					<td>
-						<input type="text" value="justaquit_settings[mainIP]" value="<?php echo $settings['mainIP'] ?>" />
+						<input type="text" name="justaquit_settings[mainIP]" value="<?php echo $settings['mainIP'] ?>" />
 					</td>
 				</tr>
 				<tr vlalign="top">
