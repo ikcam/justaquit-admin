@@ -112,6 +112,7 @@ License: GPL2
 		<ul>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Manage Clients</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Manage Domains</a></li>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_databases">List Databases</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_settings">Settings</a></li>
 		</ul>
 	</div>
@@ -290,8 +291,13 @@ License: GPL2
 				do{
 					$query = "SELECT * FROM $table WHERE db_name = %s";
 					$check = $wpdb->get_var( $wpdb->prepare($query, $db_name) );
-					if( $check!= NULL )
-						$db_name = $db_name.$i; // Rename DB
+					if( $check!= NULL ){
+						if($i==1)
+							$db_name = $db_name.$i; // Rename DB
+						else {
+							$db_name = substr( $db_name, 0, strlen($db_name)-1 ).$i;
+						}
+					}
 					$i++;
 				} while ( $check != NULL );
 
@@ -309,7 +315,7 @@ License: GPL2
 				$query = "INSERT INTO $table ( db_name, db_user, db_password, client_id ) VALUES ( %s, %s, %s, %d ) ";
 				$wpdb->query( $wpdb->prepare($query, $db_name, $db_user, $db_password, $client_id) );
 
-				// Databa base ID
+				// Datababase ID
 				$query = "SELECT * FROM $table WHERE db_name = %s AND db_user = %s";
 				$result = $wpdb->get_results( $wpdb->prepare($query, $db_name, $db_user) );
 				$database_id = $result[0]->ID;
@@ -317,15 +323,12 @@ License: GPL2
 				// Create Database
 				$query = "CREATE DATABASE $db_name;";
 				$wpdb->query( $query );
-
 				// Create User
 				$query = "CREATE USER %s@'localhost' IDENTIFIED BY  %s;";
 				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
-
 				// Grant usage
 				$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
 				$wpdb->query( $wpdb->prepare($query, $db_user, $db_password) );
-
 				// Grant access
 				$query = "GRANT ALL PRIVILEGES ON  `$db_name` . * TO  %s@'localhost';";
 				$wpdb->query( $wpdb->prepare($query, $db_user) );
@@ -335,12 +338,12 @@ License: GPL2
 			
 			$linode_did = $_POST['linode_did'];
 			$domain_name = $_POST['domain_name'];
-			$admin_email = get_option('admin_email');
+			$admin_email = get_bloginfo('admin_email');
 
 			if($settings['linodeAPI'] != ''){
 				if( $linode_did == 9999 ){
 					$table = $wpdb->prefix.'domains';
-					$query = "SELECT * FROM $table WHERE domain_url = %s";
+					$query = "SELECT ID FROM $table WHERE domain_url = %s";
 					$check = $wpdb->get_var( $wpdb->prepare($query, $domain_name) );
 					if( $check == NULL ){
 						// If currently doesn't exist create it
@@ -371,11 +374,12 @@ License: GPL2
 					} catch (Services_Linode_Exception $e) {
 						echo $e->getMessage();
 					}
+					// Verify if subdomain already exists
 					$i=1;
 					do {
 						$table = $wpdb->prefix.'domains';
 						$query = "SELECT * FROM $table WHERE domain_url = %s";
-						$check = $wpdb->get_var( $wpdb->prepare($query, $domain_fullname) );
+						$check = $wpdb->get_var( $wpdb->prepare($query, $domain_url) );
 						if( $check != NULL )
 							$domain_url = $domain_name.$i.'.'.$domain_tld;
 						$i++;
@@ -423,11 +427,11 @@ License: GPL2
 					echo '<li>Folder created in this location: <code>'.$dir.'</code></li>';
 
 					// Create Virtual Host
-					$filename = plugin_dir_url(__FILE__).'virtualhost.txt';
+					$filename = plugin_dir_path(__FILE__).'virtualhost.txt';
 					$file = fopen($filename, "r");
 					$content = fread( $file, filesize($filename) );
 					fclose($file);
-					$content = preg_replace( "/admin_email/", get_option('admin_emain'), $content );
+					$content = preg_replace( "/admin_email/", get_bloginfo('admin_email'), $content );
 					$content = preg_replace( "/domain_url/", $domain['url'], $content );
 					$home_dir = substr($dir, 0, strlen($dir)-1);
 					$content = preg_replace( "/home_dir/", $home_dir, $content );
@@ -438,11 +442,9 @@ License: GPL2
 					fwrite( $file, $content );
 					fclose($file);
 					// Enable Virtual Host
-					$exec = 'a2ensite '.$domain['url'];
+					$exec = '/usr/sbin/a2ensite '.$domain['url'];
 					shell_exec($exec);					
-					// Reload & Restart apache
-					$exec = 'service apache2 reload && service apache2 restart';
-					shell_exec($exec);					
+
 					// Echo Message
 					echo '<li>Domain added to Apache Virtual Host</li>';
 
@@ -468,7 +470,12 @@ License: GPL2
     				// Echo Message
 						echo '<li>WordPress hass been installed successfully</li>';
 					}
-
+					echo '<li>Process finish.</li>';
+					// Reload & Restart apache
+					$exec = 'chmd 4755 '.plugin_dir_path(__FILE__).'exec.sh';
+					shell_exec($exec);
+					$exec = plugin_dir_path(__FILE__).'exec.sh';
+					shell_exec($exec);
 				}
 			}
 		}
@@ -497,6 +504,7 @@ License: GPL2
 	}
 ?> 
 						</select>
+						<span class="description">Or <a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">add a new client</a></span>
 					</td>
 				</tr>
 				<tr valign="top">
@@ -631,11 +639,77 @@ $db_password = get_data('http://www.makeagoodpassword.com/password/strong/');
 ?>
 			</tbody>
 		</table>
-
-
-
 	</div>
 <?php		
+	}
+
+	function page_databases(){
+		global $wpdb;
+		$settings = get_option('justaquit_settings');
+?>
+	<div class="wrap">
+		<h2>Lists Databases</h2>
+
+		<table class="wp-list-table widefat fixed databases" cellspacing="0">
+			<thead>
+				<tr>
+					<th scope="col" id="id" class="manage-column column-id"><span>ID</span></th>
+					<th scope="col" id="domain" class="manage-column column-domain"><span>Domain</span></th>
+					<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
+					<th scope="col" id="user" class="manage-column column-user"><span>User</span></th>
+					<th scope="col" id="password" class="manage-column column-password"><span>Password</span></th>
+					<th scope="col" id="client" class="manage-column column-client"><span>Client</span></th>
+				</tr>
+			</thead>
+			<tbody id="the-list" class="list:domain">
+<?php
+	$table = $wpdb->prefix.'databases';
+	$query = "SELECT * FROM $table";
+	$databases = $wpdb->get_results( $wpdb->prepare($query) );
+	foreach( $databases as $database ):
+?>
+				<tr>
+					<th scope="row" class="column-id">
+						<span><?php echo $database->ID ?></span>
+					</th>
+					<td class="domain column-domain">
+						<span>
+<?php
+		$table = $wpdb->prefix.'domains';
+		$query = "SELECT domain_url FROM $table WHERE database_id = %s";
+		$domain_url = $wpdb->get_var( $wpdb->prepare($query, $database->ID) );
+		echo '<a href="http://'.$domain_url.'" target="_blank">'.$domain_url.'</a>';
+?>
+						</span>
+					</td>
+					<td class="name column-name">
+						<span><?php echo $database->db_name ?></span>
+					</td>
+					<td class="user column-user">
+						<span><?php echo $database->db_user ?></span>
+					</td>
+					<td class="password column-password">
+						<span><?php echo esc_attr($database->db_password) ?></span>
+					</td>
+					<td class="client column-client">
+						<span>
+<?php
+	$table = $wpdb->prefix.'clients';
+	$query = "SELECT client_name FROM $table WHERE ID = %s";
+	$client_name = $wpdb->get_var( $wpdb->prepare($query, $database->client_id) );
+	echo $client_name;
+?>
+						</span>
+					</td>
+				</tr>
+<?php
+	endforeach;
+?>
+			</tbody>
+		</table>
+
+	</div>
+<?php
 	}
 
 	function page_settings(){
@@ -760,6 +834,7 @@ function justaquit_init(){
 	add_menu_page( 'JustAquit', 'JustAquit', 'administrator', 'aquit', array('justaquit', 'page_main'), '', 59 );
 	add_submenu_page( 'aquit', 'Manage Clients', 'Manage Clients', 'administrator', 'aquit_addclient', array( 'justaquit', 'page_addclient' ) );
 	add_submenu_page( 'aquit', 'Manage Domains', 'Manage Domains', 'administrator', 'aquit_adddomain', array( 'justaquit', 'page_adddomain' ) );
+	add_submenu_page( 'aquit', 'List Databases', 'List Databases', 'administrator', 'aquit_databases', array( 'justaquit', 'page_databases' ) );
 	add_submenu_page( 'aquit', 'Settings', 'Settings', 'administrator', 'aquit_settings', array( 'justaquit', 'page_settings' ) );
 	add_action('admin_init', array('justaquit', 'settings_register'));
 }
