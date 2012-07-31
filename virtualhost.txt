@@ -1,0 +1,10 @@
+<VirtualHost *:80>
+  ServerAdmin admin_email
+  ServerName  www.domain_url
+  ServerAlias domain_url
+  DocumentRoot home_dir
+  LogLevel warn
+  AssignUserId settings_user settings_user
+  ErrorLog  settings_home/error.log
+  CustomLog settings_home/access.log combined
+</VirtualHost>

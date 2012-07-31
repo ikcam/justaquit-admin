@@ -163,7 +163,7 @@ License: GPL2
 						<label for="client_email">Client Email:</label>
 					</th>
 					<td>
-						<input type="text" name="client_email" required />
+						<input type="email" name="client_email" required />
 					</td>
 				</tr>
 				<tr valign="top">
@@ -403,7 +403,7 @@ License: GPL2
 						);
 
 					$table = $wpdb->prefix.'domains';
-					$query = "INSERT INTO $table ( client_id, database_id, domain_author, domain_title, domain_url, domain_registered	, domain_wp  ) VALUES (%d, %d, %d, %s, %s, %s, %d)";
+					$query = "INSERT INTO $table ( client_id, database_id, domain_author, domain_title, domain_url, domain_registered	, domain_wp  ) VALUES (%d, %d, %d, %s, %s, %s, %d )";
 					$wpdb->query( $wpdb->prepare($query, $domain) );
 
 					$query = "SELECT * FROM $table WHERE domain_url = %s";
@@ -411,7 +411,7 @@ License: GPL2
 					$domain_id = $result[0]->ID;
 
 					$table = $wpdb->prefix.'clientdomain';
-					$query = "INSERT INTO $table ( client_id, domain_id ) VALUES (%d, %d)";
+					$query = "INSERT INTO $table ( client_id, domain_id ) VALUES ( %d, %d )";
 					$wpdb->query( $wpdb->prepare($query, $client_id, $domain_id) );
 
 					// Create folder
@@ -421,22 +421,50 @@ License: GPL2
 
 					echo '<li>Folder created in this location: <code>'.$dir.'</code></li>';
 
+					// Create Virtual Host
+					$filename = plugin_dir_url(__FILE__).'virtualhost.txt';
+					$file = fopen($filename, "r");
+					$content = fread( $file, filesize($filename) );
+					fclose($file);
+					$content = preg_replace( "/admin_email/", get_option('admin_emain'), $content );
+					$content = preg_replace( "/domain_url/", $domain['url'], $content );
+					$home_dir = substr($dir, 0, strlen($dir)-1);
+					$content = preg_replace( "/home_dir/", $home_dir, $content );
+					$content = preg_replace( "/settings_user/", $settings['mainUser'], $content );
+					$content = preg_replace( "/settings_home/", $settings['mainFolder'].'log', $content );
+					$filename = $settings['virtualHost'].$domain['url'];
+					$file = fopen($filename, "a+");
+					fwrite( $file, $content );
+					fclose($file);
+					// Enable Virtual Host
+					$exec = 'a2ensite '.$domain['url'];
+					shell_exec($exec);					
+					// Reload & Restart apache
+					$exec = 'service apache2 reload && service apache2 restart';
+					shell_exec($exec);					
+					// Echo Message
+					echo '<li>Domain added to Apache Virtual Host</li>';
+
 					if( $domain_wp == 1 ){
 						$exec = 'cd '.$dir.' && svn co http://core.svn.wordpress.org/tags/3.4.1 .';
 						shell_exec($exec);
-						// Rename wp-config-sample.php
-						$exec = 'cd '.$dir.' && mv wp-config-sample.php wp-config.php';
-						shell_exec($exec);
+
 						// Edit wp-config.php
+						$filename = $dir.'wp-config-sample.php';
+						$file = fopen($filename, "r");
+						$content = fread( $file, filesize($filename) );
+						fclose($file);
+						$content = preg_replace("/database_name_here/", $db_name, $content);
+						$content = preg_replace("/username_here/", $db_user, $content);
+						$content = preg_replace("/password_here/", $db_password, $content);
 						$filename = $dir.'wp-config.php';
-						$file = file_get_contents($filename);
-    				file_put_contents($filename, preg_replace('/database_name_here/', $db_name, $file));
-    				file_put_contents($filename, preg_replace('/username_here/', $db_user, $file));
-    				file_put_contents($filename, preg_replace('/password_here/', $db_password, $file));
+						$file = fopen($filename, "a+");
+						fwrite( $file, $content );
+						fclose($file);
     				// Change file Owner
     				$exec = 'chown -hR '.$settings['mainUser'].':'.$settings['mainUser'].' '.$dir;
     				shell_exec($exec);
-
+    				// Echo Message
 						echo '<li>WordPress hass been installed successfully</li>';
 					}
 
@@ -570,29 +598,36 @@ $db_password = get_data('http://www.makeagoodpassword.com/password/strong/');
 			<thead>
 				<tr>
 					<th scope="col" id="id" class="manage-column column-id"><span>ID</span></th>
-					<th scope="col" id="domain" class="manage-column column-domain"><span>Name</span></th>
-					<th scope="col" id="client" class="manage-column column-client"><span>Client</span></th>
 					<th scope="col" id="title" class="manage-column column-title"><span>Title</span></th>
+					<th scope="col" id="client" class="manage-column column-client"><span>Client</span></th>
 					<th scope="col" id="url" class="manage-column column-url"><span>URL</span></th>
 				</tr>
 			</thead>
 			<tbody id="the-list" class="list:domain">
+<?php
+	$table = $wpdb->prefix.'domains';
+	$query = "SELECT * FROM $table";
+	$domains = $wpdb->get_results( $wpdb->prepare($query) );
+	foreach( $domains as $domain ):
+?>
 				<tr>
 					<th scope="row" class="column-id"><?php echo $domain->ID ?></th>
-					<td class="domain column-domain"><strong><?php echo $domain->user ?></strong></td>
+					<td class="title column-title"><strong><?php echo $domain->domain_title ?></strong></td>
 					<td class="client column-client">
 						<span>
 <?php 
-	global $wpdb;
 	$table = $wpdb->prefix.'clients';
 	$query = "SELECT client_name FROM $table WHERE ID = %s";
 	$client = $wpdb->get_var( $wpdb->prepare( $query, $domain->client_id ) );
 	echo $client;
 ?>
-						</span></td>
-					<td class="title column-title">968754010</td>
-					<td class="url column-url">0</td>
+						</span>
+					</td>
+					<td class="url column-url"><a href="//<?php echo $domain->domain_url ?>" target="_blank"><?php echo $domain->domain_url ?></a></td>
 				</tr>
+<?php
+	endforeach;
+?>
 			</tbody>
 		</table>
 
