@@ -53,7 +53,7 @@ License: GPL2
 				client_id mediumint(9) NOT NULL,
 				domain_id mediumint(9) NOT NULL,
 				UNIQUE KEY ID (ID)
-			)";
+			);";
 			$table = $wpdb->prefix."clientdomain";
 			$sql .= "CREATE TABLE $table (
 				ID mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -106,10 +106,28 @@ License: GPL2
 
 	// Just for show options available
 	function page_main(){
+		function style(){
+?>
+<style type="text/css">
+	ul.option_list > li{
+		border:1px solid #CCC;
+		border-radius:5px;
+		font-size:1.5em;
+		display:inline-block;
+		margin-right:1em;
+		padding:3em 5em;
+	}
+	ul.option_list > li > a{
+		text-decoration:none;
+	}
+</style>
+<?php	
+		}
+		add_action('admin_footer', 'style');
 ?>
 	<div class="wrap">
 		<h2>JustAquit Admin Options</h2>
-		<ul>
+		<ul class="option_list">
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Manage Clients</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Manage Domains</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_databases">List Databases</a></li>
@@ -210,10 +228,10 @@ License: GPL2
 	foreach( $clients as $client ) : $i++;
 ?>
 				<tr <?php if($i%2==0){echo 'class="alternate"';} ?>>
-					<th scope="row" class="column-id"><?php echo $client->ID ?></th>
+					<th scope="row" class="column-id"><span><?php echo $client->ID ?></span></th>
 					<td class="name column-name"><strong><?php echo $client->client_name ?></strong></td>
 					<td class="email column-email"><a href="<?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
-					<td class="phone column-phone"><?php echo $client->client_phone ?></td>
+					<td class="phone column-phone"><span><?php echo $client->client_phone ?></span></td>
 					<td class="domains column-domains">
 <?php
 		global $wpdb;
@@ -415,6 +433,10 @@ License: GPL2
 					$result = $wpdb->get_results( $wpdb->prepare($query, $domain_url) );
 					$domain_id = $result[0]->ID;
 
+					$table = $wpdb->prefix.'databases';
+					$query = "UPDATE $table SET domain_id = %s WHERE ID = %s";
+					$wpdb->query( $wpdb->prepare($query, $domain_id, $database_id) );
+
 					$table = $wpdb->prefix.'clientdomain';
 					$query = "INSERT INTO $table ( client_id, domain_id ) VALUES ( %d, %d )";
 					$wpdb->query( $wpdb->prepare($query, $client_id, $domain_id) );
@@ -504,7 +526,7 @@ License: GPL2
 	}
 ?> 
 						</select>
-						<span class="description">Or <a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">add a new client</a></span>
+						<span class="description">or <a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">add a new client</a></span>
 					</td>
 				</tr>
 				<tr valign="top">
@@ -521,6 +543,7 @@ License: GPL2
 					</th>
 					<td>
 						<input type="text" name="domain_name" id="domain_name" required />
+<?php if($settings['linodeAPI']!='') { ?>
 						<select name="linode_did">
 <?php
 	$settings = get_option('justaquit_settings');
@@ -539,6 +562,9 @@ License: GPL2
 							<option value="<?php echo $domainID ?>" selected><?php echo $domainName ?></option>
 							<option value="9999">Custom Domain</option>
 						</select>
+<?php } else { ?>
+<input type="hidden" value="0" name="linode_did" />
+<?php } ?>
 						<span class="description">User domain or subdomain. Example: DOMAIN.justaquit.net</span>
 					</td>
 				</tr>
