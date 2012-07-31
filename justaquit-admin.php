@@ -218,11 +218,12 @@ License: GPL2
 		global $wpdb;
 		$table = $wpdb->prefix.'clientdomain';
 		$query = "SELECT * FROM $table WHERE client_id = %s";
-		$domains = $wpdb->get_var( $wpdb->prepare( $query, $client->ID ) );
-		if( $domains )
-			echo $domains;
-		else
-			echo '0';
+		$domains = $wpdb->get_results( $wpdb->prepare($query, $client->ID) );
+		$i=0;
+		foreach($domains as $domain){
+			$i++;
+		}
+		echo $i;
 ?>
 					</td>
 					<td class="author column-author">
