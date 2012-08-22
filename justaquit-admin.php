@@ -131,6 +131,7 @@ License: GPL2
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_addclient">Manage Clients</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_adddomain">Manage Domains</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_databases">List Databases</a></li>
+			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_migrate">Migrate Domain</a></li>
 			<li><a href="<?php bloginfo('url') ?>/wp-admin/admin.php?page=aquit_settings">Settings</a></li>
 		</ul>
 	</div>
