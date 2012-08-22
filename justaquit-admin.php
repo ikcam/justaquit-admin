@@ -68,7 +68,7 @@ License: GPL2
 		}
 	}
 
-	// Register Settings
+	// Register settings
 	function settings_register(){
 		register_setting( 'justaquit', 'justaquit_settings', array( 'justaquit', 'verify_settings') );
 	}
@@ -152,8 +152,8 @@ License: GPL2
 			global $wpdb;
 			$table = $wpdb->prefix.'clients';
 			$query = "SELECT * FROM $table WHERE client_email = %s";
-			$procced = $wpdb->get_var( $wpdb->prepare( $query, $client['email'] ) );	
-			if( $procced == 0 ){
+			$check = $wpdb->get_var( $wpdb->prepare( $query, $client['email'] ) );	
+			if( $check == NULL ){
 				$query = "INSERT INTO $table ( client_author, client_name, client_email, client_address, client_phone, client_registered ) VALUES ( %d, %s, %s, %s, %s, %s )";
 				$wpdb->query( $wpdb->prepare( $query, $client ) );
 				echo '<div id="message" class="updated fade"><p>User created successfully.</p></div>';
@@ -224,38 +224,38 @@ License: GPL2
 	$table = $wpdb->prefix.'clients';
 	$query = "SELECT * FROM $table";
 	$clients = $wpdb->get_results( $query );
-	$i=0;
-	foreach( $clients as $client ) : $i++;
-?>
-				<tr <?php if($i%2==0){echo 'class="alternate"';} ?>>
-					<th scope="row" class="column-id"><span><?php echo $client->ID ?></span></th>
-					<td class="name column-name"><strong><?php echo $client->client_name ?></strong></td>
-					<td class="email column-email"><a href="<?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
-					<td class="phone column-phone"><span><?php echo $client->client_phone ?></span></td>
-					<td class="domains column-domains">
-<?php
-		global $wpdb;
-		$table = $wpdb->prefix.'clientdomain';
-		$query = "SELECT * FROM $table WHERE client_id = %s";
-		$domains = $wpdb->get_results( $wpdb->prepare($query, $client->ID) );
 		$i=0;
-		foreach($domains as $domain){
-			$i++;
-		}
-		echo $i;
-?>
-					</td>
-					<td class="author column-author">
-<?php
-		$author = get_userdata( $client->client_author );
-		echo $author->display_name;
-?>
-					</td>
-				</tr>
-<?php
-	endforeach;
-?>
-			</tbody>
+		foreach( $clients as $client ) : $i++;
+	?>
+					<tr <?php if($i%2==0){echo 'class="alternate"';} ?>>
+						<th scope="row" class="column-id"><span><?php echo $client->ID ?></span></th>
+						<td class="name column-name"><strong><?php echo $client->client_name ?></strong></td>
+						<td class="email column-email"><a href="<?php echo $client->client_email ?>"><?php echo $client->client_email ?></a></td>
+						<td class="phone column-phone"><span><?php echo $client->client_phone ?></span></td>
+						<td class="domains column-domains">
+	<?php
+			global $wpdb;
+			$table = $wpdb->prefix.'clientdomain';
+			$query = "SELECT * FROM $table WHERE client_id = %s";
+			$domains = $wpdb->get_results( $wpdb->prepare($query, $client->ID) );
+			$i=0;
+			foreach($domains as $domain){
+				$i++;
+			}
+			echo $i;
+	?>
+						</td>
+						<td class="author column-author">
+	<?php
+			$author = get_userdata( $client->client_author );
+			echo $author->display_name;
+	?>
+						</td>
+					</tr>
+	<?php
+		endforeach;
+	?>
+				</tbody>
 		</table>
 	</div>
 <?php
@@ -494,9 +494,9 @@ License: GPL2
 					}
 					echo '<li>Process finish.</li>';
 					// Reload & Restart apache
-					$exec = 'chmd 4755 '.plugin_dir_path(__FILE__).'exec.sh';
+					$exec = 'chmod 4755 '.plugin_dir_path(__FILE__).'exec.sh';
 					shell_exec($exec);
-					$exec = plugin_dir_path(__FILE__).'exec.sh';
+					$exec = '.'.plugin_dir_path(__FILE__).'exec.sh';
 					shell_exec($exec);
 				}
 			}
@@ -738,6 +738,149 @@ $db_password = get_data('http://www.makeagoodpassword.com/password/strong/');
 <?php
 	}
 
+	function page_migrate(){
+		global $wpdb;
+		$settings = get_option('justaquit_settings');
+
+		if( $_POST['submit'] ) :
+			$domain = array(
+					'ID' => $_POST['domainID'],
+					'url' => $_POST['domainURL']
+				);
+
+			// Check if the new domain try to replace any already registered domain
+			$table = $wpdb->prefix.'domains';
+			$query = "SELECT * FROM $table WHERE domain_url = %s";
+			$check = $wpdb->get_var( $wpdb->prepare($query, $domain['url']) );
+			if( $check == NULL ) :
+				// Update URL
+				$table = $wpdb->prefix.'domains';
+				$query = "UPDATE $table SET domain_url = %s WHERE ID = %d";
+				$wpdb->query( $wpdb->prepare($query, $domain['url'], $domain['ID']) );
+
+				// Erase Linode Resourse ID
+				$table = $wpdb->prefix.'domains';
+				$query = "SELECT domain_rid FROM $table WHERE ID = %s";
+				$domain_rid = $wpdb->get_var( $wpdb->prepare($query, $domain['ID']) );
+				require('Services/Linode.php');
+				try {
+					$linode = new Services_Linode($settings['linodeAPI']);
+					$linode = $linode->domain_resource_delete( array( 'ResourceID' => $domain_rid ) );
+				} catch (Services_Linode_Exception $e) {
+					echo $e->getMessage();
+				}
+
+				// Create Linode Resourse ID
+				require('Services/Linode.php');
+				try {
+					$linode = new Services_Linode($settings['linodeAPI']);
+					$args = array(
+							'DomainID' => $settings['linodeDomain'],
+							'Type' => 'a',
+							'Name' => $domain['url'],
+							'Target' => $settings['mainIP']
+						);
+					$domain_rid = $linode->domain_resource_create( $args );
+					$domain_rid = $domain_rid['DATA'][0]['ResourceID'];
+				} catch (Services_Linode_Exception $e) {
+					echo $e->getMessage();
+				}
+
+				// Save new Linode Resource ID
+				$table = $wpdb->prefix.'domains';
+				$query = "UPDATE $table SET linode_rid = %d WHERE ID = %d";
+				$wpdb->query( $wpdb->prepare($query, $domain_rid, $domain['ID']) );
+
+				// Destroy Virtual Host
+				$table = $wpdb->prefix.'domains';
+				$query = "SELECT domain_url FROM $table WHERE ID = %s";
+				$domain_url = $wpdb->get_var( $wpdb->prepare($query, $domain['ID']) );
+				$exec = 'a2dissite '.$domain_url;
+				shell_exec($exec);
+				$exec = 'rm -f '.$settings['virtualHost'].$domain_url;
+				shell_exec($exec);
+
+				// Rename Folder
+				$exec = 'cd '.$settings['mainFolder'].' && mv '.$domain_url.' '.$domain['url'];
+				shell_exec($exec);
+
+				// Create Virtual Host
+				$dir = $settings['mainFolder'].$domain['url'];
+				$filename = plugin_dir_path(__FILE__).'virtualhost.txt';
+				$file = fopen($filename, "r");
+				$content = fread( $file, filesize($filename) );
+				fclose($file);
+				$content = preg_replace( "/admin_email/", get_bloginfo('admin_email'), $content );
+				$content = preg_replace( "/domain_url/", $domain['url'], $content );
+				$content = preg_replace( "/home_dir/", $home_dir, $content );
+				$content = preg_replace( "/settings_user/", $settings['mainUser'], $content );
+				$content = preg_replace( "/settings_home/", $settings['mainFolder'].'log', $content );
+				$filename = $settings['virtualHost'].$domain['url'];
+				$file = fopen($filename, "a+");
+				fwrite( $file, $content );
+				fclose($file);
+
+				// Activa Virtual Host
+				$exec = 'a2ensite '.$domain['url'];
+				shell_exec($exec);
+
+				// MySQL Fix
+				$table = $wpdb->prefix.'databases';
+				$query = "SELECT * FROM $table WHERE domain_id = %s";
+				$database = $wpdb->get_row( $wpdb->prepare($query, $domain['ID']) );
+				$domain_new = $domain['url'];
+				$query = "USE $database->name; ";
+				$query .= "UPDATE wp_options SET option_value = REPLACE(option_value, $domain_url, $domain_new); ";
+				$query .= "UPDATE wp_posts SET post_content = REPLACE(post_content, $domain_url, $domain_new); ";
+				$query .= "UPDATE wp_posts SET guid = REPLACE(guid, $domain_url, $domain_new); ";
+				$query .= "UPDATE wp_postmeta SET meta_value = REPLACE(meta_value, $domain_url, $domain_new); ";
+				$wpdb->query($query);
+			else : // Check: NULL
+				echo 'Domain already exists. Please use another domain name.';
+			endif; // Check: NOT NULL
+		else : // Post: Submit
+	?>
+		<div class="wrap">
+			<h2>Migrate a Domain</h2>
+			<form action="post" method="<?php echo $_SERVER['PHP_SELF'] ?>?page=aquit_migrate">
+				<table class="form-table">
+				<tbody>
+					<tr valign="top">
+						<th scope="row">
+							<label>Old Domain</label>
+						</th>
+						<td>
+							<select name="domainID">
+	<?php
+	$table = $wpdb->prefix.'domains';
+	$query = "SELECT * FROM $table";
+	$domains = $wpdb->get_results($query);
+	foreach( $domains as $domain ) :
+	?>
+		<option value="<?php echo $domain->ID ?>"><?php echo $domain->domain_url ?></option>
+	<?php	
+	endforeach;
+	?>
+							</select>
+						</td>
+					</tr>
+					<tr valign="top">
+						<th scope="row">
+							<label>New Domain URL</label>
+						</th>
+						<td>
+							<input type="text" name="domainURL" />
+						</td>
+					</tr>
+				</tbody>
+				</table>
+				<p class="submit"><input type="submit" value="<?php _e('Save Changes') ?>" class="button-primary" /></p>
+			</form>
+		</div>
+	<?php
+		endif; // Post NO Submit
+	}
+
 	function page_settings(){
 		function scripts(){
 			echo '<script type="text/javascript" src="'.plugin_dir_url(__FILE__).'javascript/main.jquery.js"></script>';
@@ -861,6 +1004,7 @@ function justaquit_init(){
 	add_submenu_page( 'aquit', 'Manage Clients', 'Manage Clients', 'administrator', 'aquit_addclient', array( 'justaquit', 'page_addclient' ) );
 	add_submenu_page( 'aquit', 'Manage Domains', 'Manage Domains', 'administrator', 'aquit_adddomain', array( 'justaquit', 'page_adddomain' ) );
 	add_submenu_page( 'aquit', 'List Databases', 'List Databases', 'administrator', 'aquit_databases', array( 'justaquit', 'page_databases' ) );
+	add_submenu_page( 'aquit', '', 'Migrate Domain', 'administrator', 'aquit_migrate', array( 'justaquit', 'page_migrate' ) );
 	add_submenu_page( 'aquit', 'Settings', 'Settings', 'administrator', 'aquit_settings', array( 'justaquit', 'page_settings' ) );
 	add_action('admin_init', array('justaquit', 'settings_register'));
 }
