@@ -9,97 +9,81 @@ Author URI: http://ikcam.com
 License: GPL2
 */
 ?>
-<?php class justaquit {
+<?php
+public class JAdmin {
 	// Function install
-	function install(){
+	public function install(){
 		global $wpdb;
-		global $justaquit_db_version;
-		$justaquit_db_version = "1.1";
-		$installed_ver = get_option( "justaquit_db_version" );
-		if( $installed_ver != $justaquit_db_version ) {
-			$table = $wpdb->prefix."clients";
-			$sql = "CREATE TABLE $table (
-				ID mediumint(9) NOT NULL AUTO_INCREMENT,
-				client_author mediumint(9) DEFAULT 0 NOT NULL,
-				client_name varchar(250) NOT NULL,
-				client_email varchar(100) NOT NULL,
-				client_address varchar(150) NOT NULL,
-				client_phone varchar(20) NOT NULL,
-				client_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-				UNIQUE KEY ID (ID)
-			);";
-			$table = $wpdb->prefix."domains";
-			$sql .= "CREATE TABLE $table (
-				ID mediumint(9) NOT NULL AUTO_INCREMENT,
-				client_id mediumint(9) NOT NULL,
-				database_id mediumint(9) NOT NULL,
-				domain_author mediumint(9) DEFAULT 0 NOT NULL,
-				domain_title text NOT NULL,
-				domain_status varchar(20) NOT NULL,
-				domain_url varchar(55) NOT NULL,
-				linode_did mediumint(9) NOT NULL,
-				linode_rid mediumint(9) NOT NULL,
-				domain_wp tinyint(1) NOT NULL,
-				domain_registered datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-				domain_expire datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-				UNIQUE KEY ID (ID)
-			);";
-			$table = $wpdb->prefix."databases";
-			$sql .= "CREATE TABLE $table(
-				ID mediumint(9) NOT NULL AUTO_INCREMENT,
-				db_name varchar(30) NOT NULL,
-				db_user varchar(16) NOT NULL,
-				db_password varchar(55) NOT NULL,
-				client_id mediumint(9) NOT NULL,
-				domain_id mediumint(9) NOT NULL,
-				UNIQUE KEY ID (ID)
-			);";
-			$table = $wpdb->prefix."clientdomain";
-			$sql .= "CREATE TABLE $table (
-				ID mediumint(9) NOT NULL AUTO_INCREMENT,
-				client_id mediumint(9) NOT NULL,
-				domain_id mediumint(9) NOT NULL,
-				UNIQUE KEY ID (ID)
-			);";
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-			dbDelta($sql);
 
-			update_option( "justaquit_db_version", $justaquit_db_version );
-		}
+		$table = $wpdb->prefix.	"clients";
+		$sql = "CREATE TABLE $table (
+			ID mediumint(9) NOT NULL AUTO_INCREMENT,
+			first_name varchar(100) NOT NULL,
+			last_name varchar(100) NOT NULL,
+			email varchar(100) NOT NULL,
+			address varchar(150),
+			phone varchar(20),
+			registration_date mediumint(9) NOT NULL,
+			author mediumint(9) DEFAULT 0 NOT NULL,
+			editor mediumint(9) DEFAULT 0 NOT NULL,
+			UNIQUE KEY ID (ID)
+		);";
+
+		$table = $wpdb->prefix."domains";
+		$sql .= "CREATE TABLE $table (
+			ID mediumint(9) NOT NULL AUTO_INCREMENT,
+			title text NOT NULL,
+			url varchar(55) NOT NULL,
+			priority mediumint(9) DEFAULT 2 NOT NULL,
+			client_id mediumint(9) NOT NULL,
+			author mediumint(9) NOT NULL,
+			linode_did mediumint(9) NOT NULL,
+			linode_rid mediumint(9) NOT NULL,
+			wordpress tinyint(1) NOT NULL,
+			creation_date mediumint(9) NOT NULL,
+			UNIQUE KEY ID (ID)
+		);";
+
+		$table = $wpdb->prefix."databases";
+		$sql .= "CREATE TABLE $table(
+			name varchar(30) NOT NULL,
+			user varchar(16) NOT NULL,
+			password varchar(55) NOT NULL,
+			domain_id mediumint(9) NOT NULL,
+			UNIQUE KEY ID (ID)
+		);";
+
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
 	}
 
 	// Register settings
-	function settings_register(){
-		register_setting( 'justaquit', 'justaquit_settings', array( 'justaquit', 'verify_settings') );
+	public function settings_register(){
+		register_setting( 'jadmin', 'jadmin_settings', $this->settings_callback() );
 	}
 
 	// Callback functions
-	function verify_settings($input){
-		if( $input['linodeAPI'] == NULL )
-			$input['linodeAPI'] = '';
+	private function settings_callback( $input ){
+		if( $input['linode_key'] == NULL )
+			$input['linode_key'] = '';
 
-		if( $input['linodeDomain'] == NULL )
-			$input['linodeDomain'] = '';
+		if( $input['linode_did'] == NULL )
+			$input['linode_did'] = '';
 
-		if( $input['mainIP'] == NULL )
-			$input['mainIP'] = '0.0.0.0';
+		if( $input['server_ip'] == NULL )
+			$input['server_ip'] = '0.0.0.0';
 
-		if( $input['mainFolder'] == NULL )
-			$input['mainFolder'] = '/home/';
+		if( $input['server_folder'] == NULL )
+			$input['server_folder'] = '/home/';
 
-		if( $input['mainUser'] == NULL )
-			$input['mainUser'] = 'root';
+		if( $input['server_user'] == NULL )
+			$input['server_user'] = 'root';
 
-		if( $input['virtualHost'] == NULL )
-			$input['virtualHost'] = '/etc/apache2/sites-enabled/';
+		if( $input['server_apache'] == NULL )
+			$input['server_apache'] = '/etc/apache2/sites-enabled/';
 
-		if( $input['tablePrefix'] == NULL )
-			$input['tablePrefix'] = 'client_';
-
-		if( $input['userPrefix'] == NULL )
-			$input['userPrefix'] = 'client_';
-
-		$input['dbUserSize'] = (16-strlen($input['tablePrefix']));
+		if( $input['database_prefix'] == NULL )
+			$input['database_prefix'] = 'client_';
 
 		return $input;
 	}

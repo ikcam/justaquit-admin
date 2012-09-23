@@ -24,6 +24,19 @@ public class Client extends JAdmin {
 		$this->editor            = intval($editor);
 	}
 
+	private function check_client(){
+		global $wpdb;
+		$table = $wpdb->prefix.'clients';
+
+		$query = "SELECT COUNT(*) FROM $table WHERE email = %s";
+		$result = $wpdb->get_var( $wpdb->prepare($query, $this->email) );
+
+		if( $result == NULL )
+			return TRUE;
+		else
+			return FALSE;
+	}
+
 	public function add_client(){
 		global $wpdb;
 		$table = $wpdb->prefix.'clients';
@@ -38,9 +51,13 @@ public class Client extends JAdmin {
 				'author'            => $this->author
 			);
 		$format = array( '%s', '%s', '%s', '%s', '%s', '%d', '%d' );
-		$wpdb->insert( $table, $data, $format );
 
-		return $wpdb->insert_id;
+		if( $this->check_client() ){
+			$wpdb->insert( $table, $data, $format );
+			return $wpdb->insert_id;
+		} else
+			return FALSE;
+
 	}
 
 	public function delete_client( $ID ){
