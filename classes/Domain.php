@@ -3,7 +3,7 @@
 * Domain Class
 */
 
-public class Domain extends JAdmin {
+class Domain extends JAdmin {
 	private $ID;
 	private $title;
 	private $url;
@@ -15,17 +15,15 @@ public class Domain extends JAdmin {
 	private $wordpress;
 	private $creation_date;
 
-	$settings = get_option( 'jadmin_settings' );
-
 	public function __construct( $title, $url, $priority, $client_id, $author, $linode_rid, $wordpress, $creation_date ){
-		$this->title         = esc_attr($title);
-		$this->url           = esc_attr($url);
+		$this->title         = $title;
+		$this->url           = $url;
 		$this->priority      = intval($priority);
 		$this->client_id     = intval($client_id);
 		$this->author        = intval($author);
 		$this->linode_did    = intval($linode_did);
 		$this->wordpress     = intval($wordpress);
-		$this->creation_date = strtotime( current_date('mysql') );
+		$this->creation_date = strtotime( current_time('mysql') );
 	}
 
 	private function check_domain(){
@@ -35,7 +33,7 @@ public class Domain extends JAdmin {
 		$query = "SELECT COUNT(*) FROM $table WHERE url = %s;";
 		$result = $wpdb->get_var( $wpdb->prepare($query, $this->url) );
 
-		if( $result == NULL )
+		if( $result == 0 )
 			return TRUE;
 		else
 			return FALSE;
@@ -150,7 +148,7 @@ public class Domain extends JAdmin {
 		$table = $wpdb->prefix.'domains';
 
 		// Step 1: Verify if domains already exists.
-		if( $this->check_domain() ){
+		if( $this->check_domain() ) :
 			// Step 2: Create Linode Domain ID
 			$this->create_linode_did();
 			// Step 3: Create Linode Resorce ID

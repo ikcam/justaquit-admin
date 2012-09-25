@@ -3,7 +3,8 @@
 * Client Class
 */
 
-public class Client extends JAdmin {
+class Client extends JAdmin {
+	private $ID;
 	private $first_name;
 	private $last_name;
 	private $email;
@@ -13,13 +14,13 @@ public class Client extends JAdmin {
 	private $author;
 	private $editor;
 
-	public function __construct( $fist_name, $last_name, $email, $address, $phone, $author, $editor ){
-		$this->first_name        = esc_attr($first_name);
-		$this->last_name         = esc_attr($last_name);
-		$this->email             = esc_attr($email);
-		$this->address           = esc_attr($address);
-		$this->phone             = esc_attr($phone);
-		$this->registration_date = strtotime( current_date('mysql') );
+	public function __construct( $first_name, $last_name, $email, $address, $phone, $author, $editor ){
+		$this->first_name        = $first_name;
+		$this->last_name         = $last_name;
+		$this->email             = $email;
+		$this->address           = $address;
+		$this->phone             = $phone;
+		$this->registration_date = strtotime( current_time('mysql') );
 		$this->author            = intval($author);
 		$this->editor            = intval($editor);
 	}
@@ -31,7 +32,7 @@ public class Client extends JAdmin {
 		$query = "SELECT COUNT(*) FROM $table WHERE email = %s";
 		$result = $wpdb->get_var( $wpdb->prepare($query, $this->email) );
 
-		if( $result == NULL )
+		if( $result == 0 )
 			return TRUE;
 		else
 			return FALSE;
@@ -48,16 +49,15 @@ public class Client extends JAdmin {
 				'address'           => $this->address,
 				'phone'             => $this->phone,
 				'registration_date' => $this->registration_date,
-				'author'            => $this->author
+				'author'            => $this->author,
+				'editor'            => $this->editor
 			);
-		$format = array( '%s', '%s', '%s', '%s', '%s', '%d', '%d' );
+		$format = array( '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%d' );
 
-		if( $this->check_client() ){
+		if( $this->check_client() == TRUE ){
 			$wpdb->insert( $table, $data, $format );
-			return $wpdb->insert_id;
-		} else
-			return FALSE;
-
+			$this->ID = $wpdb->insert_id;
+		}
 	}
 
 	public function delete_client( $ID ){
@@ -88,6 +88,10 @@ public class Client extends JAdmin {
 		$format = array( '%s', '%s', '%s', '%s', '%s', '%d' );
 
 		return $wpdb->update( $table, $data, $where, $format );
-	}	
+	}
+
+	public function get_ID(){
+		return $this->ID;
+	}
 } 
 ?>

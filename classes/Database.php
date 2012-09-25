@@ -3,14 +3,12 @@
 * Database Class
 */
 
-public class Database extends JAdmin {
+class Database extends JAdmin {
 	private $ID;
 	private $name;
 	private $user;
 	private $password;
 	private $domain_id;
-
-	$settings = get_option( 'jadmin_settings' );
 
 	public function __construct( $url, $domain_id ){
 		global $settings;

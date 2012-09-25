@@ -23,6 +23,17 @@ function get_client( $ID ){
 	return $client;
 }
 
+function get_clients(){
+	global $wpdb;
+	$table = $wpdb->prefix.'clients';
+
+	$query = "SELECT * FROM $table ORDER BY ID DESC";
+
+	$clients = $wpdb->get_results( $wpdb->prepare($query) );
+
+	return $clients;
+}
+
 /*
 * Name:
 *	 get_domain( $ID )
@@ -41,6 +52,30 @@ function get_domain( $ID ){
 	$domain = $wpdb->get_row( $wpdb->prepare($query, $ID) );
 
 	return $domain;
+}
+
+function get_domains(){
+	global $wpdb;
+	$table = $wpdb->prefix.'domains';
+
+	$query = "SELECT * FROM $table ORDER BY ID DESC";
+
+	$domains = $wpdb->get_results( $wpdb->prepare($query) );
+
+	return $domains;
+}
+
+function get_linode_domains(){
+	require('Services/Linode.php');
+	try {
+		$linode = new Services_Linode($settings['linode_key']);
+		$linode = $linode->domain_list();
+		$domains = $linode['DATA'];
+	} catch (Services_Linode_Exception $e) {
+		echo $e->getMessage();
+	}
+
+	return $domains;
 }
 
 /*
