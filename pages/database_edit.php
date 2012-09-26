@@ -2,7 +2,7 @@
 function jadmin_page_database_edit(){
 	$ID = $_GET['ID'];
 	$database = get_database( $ID );
-	if( is_array($database) ):
+	if( $database != NULL ):
 ?>
 <div class="wrap">
 <div id="icon-edit-pages" class="icon32"><br></div>
@@ -38,7 +38,7 @@ function jadmin_page_database_edit(){
 	else:
 ?>
 <div id="message" class="error">
-	<p>The detabase that you are looking for doesn't exists.</p>
+	<p>The database that you are looking for doesn't exists.</p>
 </div>
 <?php
 	endif;
