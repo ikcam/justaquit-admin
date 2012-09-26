@@ -151,10 +151,8 @@ class Domain extends JAdmin {
 		if( $this->check_domain() ) :
 			// Step 2: Create Linode Domain ID
 			$this->create_linode_did();
-			echo '<li>Linode domain ID saved.</li>';
 			// Step 3: Create Linode Resorce ID
 			$this->create_linode_rid();
-			echo '<li>Linode resource ID saved.</li>';
 			// Step 4: Insert information into database.
 			$data = array(
 					'title'         => $this->title,

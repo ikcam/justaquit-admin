@@ -12,7 +12,8 @@ class Database extends JAdmin {
 	private $domain_id;
 
 	public function __construct( $basename, $domain_id ){
-		$basename = preg_replace( '/ /', '', $basename );
+		echo $basename;
+		$basename = preg_replace( '/\s/', '', $basename );
 		$basename = preg_replace( '/./', '', $basename );
 		$basename = preg_replace( '/-/', '', $basename );
 		$this->basename  = $basename;
