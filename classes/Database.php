@@ -92,8 +92,8 @@ class Database extends JAdmin {
 		$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
 		$wpdb->query( $wpdb->prepare($query, $this->user, $this->password) );
 		// Step 4: Grant access
-		$query = "GRANT ALL PRIVILEGES ON  %s . * TO  %s@'localhost';";
-		$wpdb->query( $wpdb->prepare($query, $this->name, $this->user) );
+		$query = "GRANT ALL PRIVILEGES ON  $this->name . * TO  %s@'localhost';";
+		$wpdb->query( $wpdb->prepare($query, $this->user) );
 	}
 
 	public function delete_database( $ID ){
@@ -157,8 +157,8 @@ Class DBCustom extends JAdmin{
 		$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
 		$wpdb->query( $wpdb->prepare($query, $this->user, $this->password) );
 		// Step 4: Grant access
-		$query = "GRANT ALL PRIVILEGES ON  %s . * TO  %s@'localhost';";
-		$wpdb->query( $wpdb->prepare($query, $this->name, $this->user) );
+		$query = "GRANT ALL PRIVILEGES ON  $this->name . * TO  %s@'localhost';";
+		$wpdb->query( $wpdb->prepare($query, $this->user) );
 	}
 
 	public function get_ID(){
