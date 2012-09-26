@@ -1,7 +1,30 @@
 <?php
 function jadmin_page_domain_add(){
+	global $settings;
+
 	if( $_POST['submit'] ) :
-		echo 'Text';
+?>
+<div id="message" class="updated">
+	<ul>
+<?php
+		$client_id  = $_POST['client_id'];
+		$title      = $_POST['title'];
+		$url        = $_POST['url'];
+		$linode_did = $_POST['linode_did'];
+		$priority   = $_POST['priority'];
+		if( $_POST['wordpress'] == TRUE ):
+			$wordpress = 1;
+		else:
+			$wordpress = 0;
+		endif;
+		$author     = get_current_user_id();
+
+		$domain = new Domain( $client_id, $title, $url, $linode_did, $priority, $wordpress, $author );
+		$domain->add_domain();
+?>
+	</ul>
+</div>
+<?php
 	endif;
 ?>
 <div class="wrap">
@@ -42,12 +65,24 @@ function jadmin_page_domain_add(){
 						<option value="0">Custom Domain</option>
 					<?php
 						$domains = get_linode_domains();
-						foreach( $domains as $domain ):
+						if( $domains ):
+							foreach( $domains as $domain ):
 					?>
-							<option value="<?php echo $domain['DOMAINID'] ?>"><?php echo $domain['DOMAIN'] ?></option>
+							<option value="<?php echo $domain['DOMAINID'] ?>" <?php if( $domain['DOMAINID'] == $settings['linode_main'] ) echo 'selected' ?>><?php echo $domain['DOMAIN'] ?></option>
 					<?php
-						endforeach;
+							endforeach;
+						endif;
 					?>
+					</select>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">Priority</th>
+				<td>
+					<select name="priority">
+						<option value="1">Low</option>
+						<option value="2" selected>Normal</option>
+						<option value="3">High</option>
 					</select>
 				</td>
 			</tr>

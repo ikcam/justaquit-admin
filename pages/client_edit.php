@@ -14,9 +14,9 @@ function jadmin_page_client_edit(){
 		$client = new Client( $first_name, $last_name, $email, $address, $phone, $author, $editor );
 		$client->update_client( $ID );
 ?>
-		<div id="message" class="updated">
-			<p>Client updated succesfuly.</p>
-		</div>
+<div id="message" class="updated">
+	<p>Client updated succesfuly.</p>
+</div>
 <?php
 	endif;
 

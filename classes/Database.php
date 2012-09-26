@@ -5,64 +5,72 @@
 
 class Database extends JAdmin {
 	private $ID;
+	private $basename;
 	private $name;
 	private $user;
 	private $password;
 	private $domain_id;
 
-	public function __construct( $url, $domain_id ){
-		global $settings;
-
-		$basename        = $settings['database_prefix'].$url;
-		$name            = substr( $basename, 0, 27 );
-		$user            = substr( $basename, 0, 16 );
-		
-		$this->name      = $name;
-		$this->user      = $user;
+	public function __construct( $basename, $domain_id ){
+		$basename = preg_replace( '/ /', '', $basename );
+		$basename = preg_replace( '/./', '', $basename );
+		$basename = preg_replace( '/-/', '', $basename );
+		$this->basename  = $basename;
 		$this->password  = get_data('http://www.makeagoodpassword.com/password/strong/');
 		$this->domain_id = $domain_id;
 	}
 
-	private function check_name(){
+	private function set_basename(){
+		global $settings;
+
+		$name = $settings['database_prefix'].$this->basename;
+
+		$this->basename = $name;
+	}
+
+	private function set_name(){
 		global $wpdb;
 		$table = $wpdb->prefix.'databases';
 
+		$this->name = substr($this->basename, 0, 25);
 		$i = 0;
 		do {
 			$i++;
 			$query  = "SELECT COUNT(*) FROM $table WHERE name = %s";
 			$result = $wpdb->get_var( $wpdb->prepare($query, $this->name) );
-			if( $result != NULL ){
+			if( $result > 0 ){
 				$length     = strlen( $this->name ) - 1;
 				$name       = substr( $this->name, 0, $length ).$i;
 				$this->name = $name;
 			}
-		} while( $result != NULL );
+		} while( $result > 0 );
 	}
 
-	private function check_user(){
+	private function set_user(){
 		global $wpdb;
 		$table = $wpdb->prefix.'databases';
 
+		$this->user = substr($this->basename, 0, 16);
 		$i = 0;
 		do {
 			$i++;
 			$query  = "SELECT COUNT(*) FROM $table WHERE user = %s";
 			$result = $wpdb->get_var( $wpdb->prepare($query, $this->user) );
-			if( $result != NULL ){
+			if( $result > 0 ){
 				$length     = strlen( $this->user ) - 1;
 				$user       = substr( $this->user, 0, $length ).$i;
 				$this->user = $user;
 			}
-		} while( $result != NULL );
+		} while( $result > 0 );
 	}
 
 	public function add_database(){
 		global $wpdb;
 		$table = $wpdb->prefix.'databases';
 
-		$this->check_name();
-		$this->check_user();
+		$this->set_basename();
+		$this->set_name();
+		$this->set_user();
 
 		$data = array(
 				'name'      => $this->name,
@@ -75,8 +83,8 @@ class Database extends JAdmin {
 		$this->ID = $wpdb->insert_id;
 
 		// Step 1: Create Database
-		$query = "CREATE DATABASE %s;";
-		$wpdb->query( $wpdb->prepare($query, $this->name) );
+		$query = "CREATE DATABASE $this->name;";
+		$wpdb->query( $query );
 		// Step 2: Create User
 		$query = "CREATE USER %s@'localhost' IDENTIFIED BY  %s;";
 		$wpdb->query( $wpdb->prepare($query, $this->user, $this->password ) );

@@ -7,13 +7,30 @@ function jadmin_page_settings(){
 
 	<form action="options.php" method="post">
 	<?php settings_fields('jadmin'); ?>
-		<h3>API Keys</h3>
+		<h3>Linode Settings</h3>
 		<table class="form-table">
 		<tbody>
 			<tr valign="top">
 				<th scope="row">Linode API Key</th>
 				<td>
 					<textarea name="jadmin_settings[linode_key]" cols="50"><?php echo $settings['linode_key'] ?></textarea>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">Main Domain</th>
+				<td>
+					<select name="jadmin_settings[linode_main]">
+					<?php
+						$domains = get_linode_domains();
+						if( $domains ):
+							foreach( $domains as $domain ):
+					?>
+						<option value="<?php echo $domain['DOMAINID'] ?>" <?php if( $domain['DOMAINID'] == $settings['linode_main'] ) echo 'selected' ?>><?php echo $domain['DOMAIN'] ?></option>
+					<?php
+							endforeach;
+						endif;
+					?>
+					</select>
 				</td>
 			</tr>
 		</tbody>

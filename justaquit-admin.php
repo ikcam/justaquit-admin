@@ -12,27 +12,28 @@ License: GPL2
 <?php
 // Settings
 $settings = get_option( 'jadmin_settings' );
-// Classes
-require_once(plugin_dir_path(__FILE__).'classes/Client.php');
-require_once(plugin_dir_path(__FILE__).'classes/Database.php');
-require_once(plugin_dir_path(__FILE__).'classes/Domain.php');
+define( 'BASEPATH', plugin_dir_path(__FILE__) );
 // Funcions
-require_once(plugin_dir_path(__FILE__).'jadmin_functions.php');
+require_once(BASEPATH.'jadmin_functions.php');
+// Classes
+require_once(BASEPATH.'classes/Client.php');
+require_once(BASEPATH.'classes/Database.php');
+require_once(BASEPATH.'classes/Domain.php');
 // Pages
-require_once(plugin_dir_path(__FILE__).'pages/main.php');
+require_once(BASEPATH.'pages/main.php');
 // Clients
-require_once(plugin_dir_path(__FILE__).'pages/clients.php');
-require_once(plugin_dir_path(__FILE__).'pages/client_add.php');
-require_once(plugin_dir_path(__FILE__).'pages/client_edit.php');
-require_once(plugin_dir_path(__FILE__).'pages/client_delete.php');
+require_once(BASEPATH.'pages/clients.php');
+require_once(BASEPATH.'pages/client_add.php');
+require_once(BASEPATH.'pages/client_edit.php');
+require_once(BASEPATH.'pages/client_delete.php');
 // Domains
-require_once(plugin_dir_path(__FILE__).'pages/domains.php');
-require_once(plugin_dir_path(__FILE__).'pages/domain_add.php');
+require_once(BASEPATH.'pages/domains.php');
+require_once(BASEPATH.'pages/domain_add.php');
 //require_once(plugin_dir_path(__FILE__).'pages/domain_delete.php');
 // Databases
-require_once(plugin_dir_path(__FILE__).'pages/databases.php');
+require_once(BASEPATH.'pages/databases.php');
 // Settings
-require_once(plugin_dir_path(__FILE__).'pages/settings.php');
+require_once(BASEPATH.'pages/settings.php');
 
 class JAdmin {
 	public function install(){
@@ -92,8 +93,8 @@ class JAdmin {
 		if( $input['linode_key'] == NULL )
 			$input['linode_key'] = '';
 
-		if( $input['linode_did'] == NULL )
-			$input['linode_did'] = '';
+		if( $input['linode_main'] == NULL )
+			$input['linode_main'] = '';
 
 		if( $input['server_ip'] == NULL )
 			$input['server_ip'] = '0.0.0.0';

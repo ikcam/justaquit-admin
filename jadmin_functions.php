@@ -66,7 +66,9 @@ function get_domains(){
 }
 
 function get_linode_domains(){
-	require('Services/Linode.php');
+	global $settings;
+
+	require_once('Services/Linode.php');
 	try {
 		$linode = new Services_Linode($settings['linode_key']);
 		$linode = $linode->domain_list();
@@ -155,7 +157,9 @@ function get_domains_count( $ID ){
 * 	String: Domain name from Linode.
 */
 function get_linode_domain_name( $ID ){
-	require('Services/Linode.php');
+	global $settings;
+	
+	require_once('Services/Linode.php');
 	try {
 		$linode = new Services_Linode($settings['linode_key']);
 		$linode = $linode->domain_list(
@@ -193,7 +197,7 @@ function get_data( $url ){
 }
 
 function restart_apache(){
-	$exec = plugin_dir_path(__FILE__).'exec.sh';
+	$exec = BASEPATH .'exec.sh';
 	shell_exec($exec);
 }
 ?>
