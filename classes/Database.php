@@ -20,12 +20,11 @@ class Database extends JAdmin {
 		global $settings;
 		$table = $wpdb->prefix.'databases';
 
-		$domain = get_domain( $this->domain_id );
+		$domain   = get_domain( $this->domain_id );
 		$basename = $domain->url;
 
-		if( $domain_did != 0 ) :
-			$linode_domain = get_linode_domain_name( $domain->linode_did );
-			$basename = str_replace( esc_atrr($linode_domain), "", $basename );
+		if( $domain->linode_did != 0 ) :
+			$basename = str_replace( get_linode_domain_name( $domain->linode_did ), "", $basename );
 		else :
 			$basename = substr( $basename, 0, strlen($basename)-4 );
 		endif;
