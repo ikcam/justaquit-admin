@@ -12,66 +12,54 @@ class Database extends JAdmin {
 	private $domain_id;
 
 	public function __construct( $basename, $domain_id ){
-		$basename = preg_replace( '/\s/', '', $basename );
-		$basename = preg_replace( '/./', '', $basename );
-		$basename = preg_replace( '/-/', '', $basename );
-		echo $basename;
 		$this->basename  = $basename;
-		$this->name      = $this->set_name();
-		$this->user      = $this->set_user();
 		$this->password  = get_data('http://www.makeagoodpassword.com/password/strong/');
 		$this->domain_id = $domain_id;
 	}
 
-	private function set_basename(){
+	private function setup_info(){
+		global $wpdb;
 		global $settings;
-
-		$name = $settings['database_prefix'].$this->basename;
-
-		$this->basename = $name;
-	}
-
-	private function set_name(){
-		global $wpdb;
 		$table = $wpdb->prefix.'databases';
 
-		$this->name = substr($this->basename, 0, 25);
-		$i = 0;
-		do {
+		$basename = preg_replace( '/\s/', '', $this->basename );
+		$basename = preg_replace( '/./', '', $basename );
+		$basename = preg_replace( '/-/', '', $basename );
+		echo $basename;
+		// Check Name
+		$name = substr( $basename, 0, 25);
+		$i=0;
+		do{
 			$i++;
-			$query  = "SELECT COUNT(*) FROM $table WHERE name = %s";
-			$result = $wpdb->get_var( $wpdb->prepare($query, $this->name) );
+			$query = "SELECT COUNT(*) FROM $table WHERE name = %s";
+			$result = $wpdb->get_var( $wpdb->prepare($query, $name) );
 			if( $result > 0 ){
-				$length     = strlen( $this->name ) - 1;
-				$name       = substr( $this->name, 0, $length ).$i;
-				$this->name = $name;
+				$name = substr( $name, 0, strlen($name)-1 ).$i;
 			}
 		} while( $result > 0 );
-	}
-
-	private function set_user(){
-		global $wpdb;
-		$table = $wpdb->prefix.'databases';
-
-		$this->user = substr($this->basename, 0, 16);
-		$i = 0;
-		do {
+		// Check User
+		$user = substr( $basename, 0, 16);
+		$i=0;
+		do{
 			$i++;
-			$query  = "SELECT COUNT(*) FROM $table WHERE user = %s";
-			$result = $wpdb->get_var( $wpdb->prepare($query, $this->user) );
+			$query = "SELECT COUNT(*) FROM $table WHERE user = %s";
+			$result = $wpdb->get_var( $wpdb->prepare($query, $user) );
 			if( $result > 0 ){
-				$length     = strlen( $this->user ) - 1;
-				$user       = substr( $this->user, 0, $length ).$i;
-				$this->user = $user;
+				$user = substr( $user, 0, strlen($user)-1 ).$i;
 			}
 		} while( $result > 0 );
-	}
 
+		$this->name = $name;
+		echo $this->name;
+		$this->user = $user;
+		echo $this->user;
+	}
+	
 	public function add_database(){
 		global $wpdb;
 		$table = $wpdb->prefix.'databases';
 
-		$this->set_basename();
+		$this->setup_info();
 
 		$data = array(
 				'name'      => $this->name,
