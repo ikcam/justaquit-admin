@@ -170,21 +170,16 @@ class Domain extends JAdmin {
 			$format = array( '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%d', '%d' );
 			$wpdb->insert( $table, $data, $format );
 			$this->ID = $wpdb->insert_id;
-			echo '<li>Domain info inserted into database.</li>';
 			// Step 5: Create database for new domain
-			$database = new Database( $this->url, $this->ID );
+			$database = new Database( $data['url'], $this->ID );
 			$database->add_database();
-			echo '<li>Database created.</li>';
 			// Step 6: Create new folder
 			$this->create_folder();
-			echo '<li>Folder created.</li>';
 			// Step 7: Create virtual host
 			$this->create_vhost();
-			echo '<li>Virtual Host created.</li>';
 			// Step 8: Install WordPress
 			if( $this->wordpress == 1 ) :
 				$this->create_wordpress( $database->get_ID() );
-				echo '<li>WordPress installed.</li>';
 			endif;
 			// Step 9: Restart Apache
 			// restart_apache();
