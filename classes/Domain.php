@@ -180,7 +180,7 @@ class Domain extends JAdmin {
 				$this->create_wordpress( $database->get_ID() );
 			endif;
 			// Step 9: Restart Apache
-			// restart_apache();
+			restart_apache();
 		else:
 			echo 'Domain already exists';
 		endif;
