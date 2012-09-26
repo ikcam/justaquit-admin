@@ -12,11 +12,13 @@ class Database extends JAdmin {
 	private $domain_id;
 
 	public function __construct( $basename, $domain_id ){
-		echo $basename;
 		$basename = preg_replace( '/\s/', '', $basename );
 		$basename = preg_replace( '/./', '', $basename );
 		$basename = preg_replace( '/-/', '', $basename );
+		echo $basename;
 		$this->basename  = $basename;
+		$this->name      = $this->set_name();
+		$this->user      = $this->set_user();
 		$this->password  = get_data('http://www.makeagoodpassword.com/password/strong/');
 		$this->domain_id = $domain_id;
 	}
@@ -70,8 +72,6 @@ class Database extends JAdmin {
 		$table = $wpdb->prefix.'databases';
 
 		$this->set_basename();
-		$this->set_name();
-		$this->set_user();
 
 		$data = array(
 				'name'      => $this->name,
