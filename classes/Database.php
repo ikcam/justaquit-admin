@@ -23,7 +23,7 @@ class Database extends JAdmin {
 		$domain   = get_domain( $this->domain_id );
 		$basename = $domain->url;
 
-		if( $domain->linode_did != 0 ) :
+		if( $domain->linode_rid != 0 ) :
 			$basename = str_replace( get_linode_domain_name( $domain->linode_did ), "", $basename );
 		else :
 			$basename = substr( $basename, 0, strlen($basename)-4 );
