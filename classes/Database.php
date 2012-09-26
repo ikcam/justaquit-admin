@@ -121,7 +121,7 @@ class Database extends JAdmin {
 	}
 }
 
-Class DBCustom extends Database{
+Class DBCustom extends JAdmin{
 	private $ID;
 	private $name;
 	private $user;
@@ -135,6 +135,7 @@ Class DBCustom extends Database{
 
 	public function add_database(){
 		global $wpdb;
+		$table = $wpdb->prefix.'databases';
 
 		$data = array(
 				'name'      => $this->name,
