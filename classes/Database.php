@@ -21,12 +21,12 @@ class Database extends JAdmin {
 		global $wpdb;
 		global $settings;
 		$table = $wpdb->prefix.'databases';
-		
+
 		$basename = $this->basename;
 		echo 'Basename1: '.$basename.'<br />';
-		$basename = preg_replace( '/./', '', $basename );
+		$basename = str_replace( ".", "", $basename );
 		echo 'Basename2: '.$basename.'<br />';
-		$basename = preg_replace( '/-/', '', $basename );
+		$basename = str_replace( "-", "", $basename );
 		echo 'Basename3: '.$basename.'<br />';
 		$basename = $settings['database_prefix'].$basename;
 		echo 'Basename4: '.$basename.'<br />';
