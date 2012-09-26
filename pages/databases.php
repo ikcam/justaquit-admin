@@ -1,6 +1,8 @@
 <?php
 function jadmin_page_databases(){
-	if( $_GET['action'] == 'edit' ):
+	if( $_GET['action'] == 'add' ):
+		jadmin_page_database_add();
+	elseif( $_GET['action'] == 'edit' ):
 		jadmin_page_database_edit();
 	else:
 		if( $_GET['action'] == 'delete' ):

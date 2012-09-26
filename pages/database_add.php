@@ -1,5 +1,27 @@
 <?php
 function jadmin_page_database_add(){
+	if( $_POST['submit'] ):
+		$name = $_POST['name'];
+		$user = $_POST['user'];
+		$password= $_POST['password'];
+		$repassword = $_POST['repassword'];
+
+		if( $password != $repassword ) :
+?>
+<div id="message" class="error">
+	<p>The passwords that you enter didn't match</p>
+</div>
+<?php
+		else:
+			$database = new DBCustom( $name, $user, $password );
+			$database->add_database();
+?>
+<div id="message" class="updated">
+	<p>New database created. <a href="?page=jadmin_databases&amp;action=edit&amp;ID=<?php echo $database->get_ID() ?>">Edit Database</a></p>
+</div>
+<?php
+		endif;
+	endif;
 ?>
 <div class="wrap">
 <div id="icon-edit-pages" class="icon32"><br></div>
@@ -11,13 +33,13 @@ function jadmin_page_database_add(){
 		<tr valign="top">
 			<th scope="row">Name</th>
 			<td>
-				<input type="text" name="name" />
+				<input type="text" name="name" value="<?php echo $_POST['name'] ?>" />
 			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">User</th>
 			<td>
-				<input type="text" name="user" />
+				<input type="text" name="user" value="<?php echo $_POST['user'] ?>" />
 			</td>
 		</tr>
 		<tr valign="top">

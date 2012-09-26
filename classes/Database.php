@@ -120,4 +120,48 @@ class Database extends JAdmin {
 		return $this->ID;
 	}
 }
+
+Class DBCustom extends Database{
+	private $ID;
+	private $name;
+	private $user;
+	private $password;
+
+	public function __construct( $name, $user, $password ){
+		$this->name     = $name;
+		$this->user     = $user;
+		$this->password = $password;
+	}
+
+	public function add_database(){
+		global $wpdb;
+
+		$data = array(
+				'name'      => $this->name,
+				'user'      => $this->user,
+				'password'  => $this->password,
+				'domain_id' => 0
+			);
+		$format = array( '%s', '%s', '%s', '%d' );
+		$wpdb->insert( $table, $data, $format );
+		$this->ID = $wpdb->insert_id;
+
+		// Step 1: Create Database
+		$query = "CREATE DATABASE $this->name;";
+		$wpdb->query( $query );
+		// Step 2: Create User
+		$query = "CREATE USER %s@'localhost' IDENTIFIED BY  %s;";
+		$wpdb->query( $wpdb->prepare($query, $this->user, $this->password ) );
+		// Step 3: Grant usage
+		$query = "GRANT USAGE ON * . * TO  %s@'localhost' IDENTIFIED BY  %s;";
+		$wpdb->query( $wpdb->prepare($query, $this->user, $this->password) );
+		// Step 4: Grant access
+		$query = "GRANT ALL PRIVILEGES ON  %s . * TO  %s@'localhost';";
+		$wpdb->query( $wpdb->prepare($query, $this->name, $this->user) );
+	}
+
+	public function get_ID(){
+		return $this->ID;
+	}
+}
 ?>

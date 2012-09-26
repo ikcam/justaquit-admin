@@ -193,6 +193,10 @@ class Domain extends JAdmin {
 		endif;
 	}
 
+	public function get_ID(){
+		return $this->ID;
+	}
+
 	public function update_domain(){
 		global $wpdb;
 		$table = $wpdb->prefix.'domains';
