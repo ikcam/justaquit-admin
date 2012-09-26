@@ -102,7 +102,9 @@ class Database extends JAdmin {
 		
 		$database = get_database( $ID );
 
-		if( is_array( $database ) ):
+		if( $database == NULL ):
+			return FALSE;
+		else:
 			$query = "DROP DATABASE $database->name;";
 			$wpdb->query( $query );
 
@@ -111,8 +113,6 @@ class Database extends JAdmin {
 
 			$query = "DELETE FROM $table WHERE ID = %d;";
 			$wpdb->query( $wpdb->prepare($query,$database->ID) );
-		else:
-			return FALSE;
 		endif;
 	}
 
