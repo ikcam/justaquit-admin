@@ -22,10 +22,10 @@ class Database extends JAdmin {
 		global $settings;
 		$table = $wpdb->prefix.'databases';
 
-		$basename = preg_replace( '/\s/', '', $this->basename );
-		$basename = preg_replace( '/./', '', $basename );
+		$basename = preg_replace( '/./', '', $this->basename );
 		$basename = preg_replace( '/-/', '', $basename );
-		echo $basename;
+		$basename = $settings['database_prefix'].$basename;
+		echo 'Basename: '.$basename.'<br />';
 		// Check Name
 		$name = substr( $basename, 0, 25);
 		$i=0;
@@ -50,9 +50,9 @@ class Database extends JAdmin {
 		} while( $result > 0 );
 
 		$this->name = $name;
-		echo $this->name;
 		$this->user = $user;
-		echo $this->user;
+		echo 'Name: '.$this->name.'<br />';
+		echo 'User: '.$this->user.'<br />';
 	}
 	
 	public function add_database(){
