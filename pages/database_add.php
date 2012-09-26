@@ -33,19 +33,20 @@ function jadmin_page_database_add(){
 		<tr valign="top">
 			<th scope="row">Name</th>
 			<td>
-				<input type="text" name="name" value="<?php echo $_POST['name'] ?>" />
+				<input type="text" name="name" value="<?php echo $_POST['name'] ?>" placeholder="Database Name" />
 			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">User</th>
 			<td>
-				<input type="text" name="user" value="<?php echo $_POST['user'] ?>" />
+				<input type="text" name="user" value="<?php echo $_POST['user'] ?>" placeholder="Database User" />
 			</td>
 		</tr>
 		<tr valign="top">
 			<th scope="row">Password</th>
 			<td>
-				<input type="text" name="password" />
+				<input type="text" name="password" placeholder="Password" />
+				<input type="text" name="repassword" placeholder="Repeat Password" />
 			</td>
 		</tr>
 	</tbody>
