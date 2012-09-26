@@ -3,6 +3,7 @@ function jadmin_page_database_delete(){
 	$ID = $_GET['ID'];
 
 	$database = get_database( $ID );
+	print_r($database);
 
 	if( is_array($database) ) :
 		$delete = new Database( 'delete_database', $database->ID );
