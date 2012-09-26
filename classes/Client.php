@@ -67,7 +67,7 @@ class Client extends JAdmin {
 		$client = get_client( $ID );
 
 		if( is_array($client) ):
-			if( has_domains($client->ID) )
+			if( has_domains($client->ID) ):
 				return FALSE;
 			else:
 				$query = "DELETE FROM $table WHERE ID = %d;";
