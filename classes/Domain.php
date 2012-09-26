@@ -169,7 +169,7 @@ class Domain extends JAdmin {
 			$wpdb->insert( $table, $data, $format );
 			$this->ID = $wpdb->insert_id;
 			// Step 5: Create database for new domain
-			$database = new Database( $data['url'], $this->ID );
+			$database = new Database( $this->ID );
 			$database->add_database();
 			// Step 6: Create new folder
 			$this->create_folder();

@@ -11,27 +11,35 @@ class Database extends JAdmin {
 	private $password;
 	private $domain_id;
 
-	public function __construct( $basename, $domain_id ){
-		$this->basename  = $basename;
+	public function __construct( $domain_id ){
 		$this->password  = get_data('http://www.makeagoodpassword.com/password/strong/');
 		$this->domain_id = $domain_id;
 	}
 
 	private function setup_info(){
-		global $wpdb;
 		global $settings;
 		$table = $wpdb->prefix.'databases';
 
-		$basename = $this->basename;
-		echo 'Basename1: '.$basename.'<br />';
+		$domain = get_domain( $this->domain_id );
+		$basename = $domain->url;
+
+		if( $domain_did != 0 ) :
+			$basename = str_replace( get_linode_domain_name( $domain->linode_did ), "", $basename );
+		else :
+			$basename = substr( $basename, 0, strlen($basename)-4 );
+		endif;
+
 		$basename = str_replace( ".", "", $basename );
-		echo 'Basename2: '.$basename.'<br />';
 		$basename = str_replace( "-", "", $basename );
-		echo 'Basename3: '.$basename.'<br />';
 		$basename = $settings['database_prefix'].$basename;
-		echo 'Basename4: '.$basename.'<br />';
-		// Check Name
-		$name = substr( $basename, 0, 25);
+
+		$this->basename = $basename;
+	}
+
+	private function set_name(){
+		global $wpdb;
+
+		$name = substr( $this->basename, 0, 25);
 		$i=0;
 		do{
 			$i++;
@@ -41,8 +49,14 @@ class Database extends JAdmin {
 				$name = substr( $name, 0, strlen($name)-1 ).$i;
 			}
 		} while( $result > 0 );
-		// Check User
-		$user = substr( $basename, 0, 16);
+
+		$this->name = $name;
+	}
+
+	private function set_user(){
+		global $wpdb;
+
+		$user = substr( $this->basename, 0, 16);
 		$i=0;
 		do{
 			$i++;
@@ -53,10 +67,7 @@ class Database extends JAdmin {
 			}
 		} while( $result > 0 );
 
-		$this->name = $name;
 		$this->user = $user;
-		echo 'Name: '.$this->name.'<br />';
-		echo 'User: '.$this->user.'<br />';
 	}
 	
 	public function add_database(){
