@@ -34,6 +34,8 @@ class Database extends JAdmin {
 		$basename = $settings['database_prefix'].$basename;
 
 		$this->basename = $basename;
+		$this->set_name();
+		$this->set_user();
 	}
 
 	private function set_name(){
