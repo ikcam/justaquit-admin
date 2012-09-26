@@ -100,6 +100,17 @@ function get_database( $ID ){
 	return $database;
 }
 
+function get_databases(){
+	global $wpdb;
+	$table = $wpdb->prefix.'databases';
+
+	$query = "SELECT * FROM $table ORDER BY ID DESC";
+
+	$databases = $wpdb->get_results( $wpdb->prepare($query) );
+
+	return $databases;	
+}
+
 /*
 * Name:
 * 	has_domains( $ID )

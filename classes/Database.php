@@ -96,6 +96,26 @@ class Database extends JAdmin {
 		$wpdb->query( $wpdb->prepare($query, $this->name, $this->user) );
 	}
 
+	public function delete_database( $ID ){
+		global $wpdb;
+		$table = $wpdb->prefix.'databases';
+		
+		$database = get_database( $ID );
+
+		if( is_array( $database ) ):
+			$query = "DROP DATABASE $database->name;";
+			$wpdb->query( $query );
+
+			$query = "DROP USER %s;";
+			$wpdb->query( $wpdb->prepare($query, $database->user) );
+
+			$query = "DELETE FROM $table WHERE ID = %d;";
+			$wpdb->query( $wpdb->prepare($query,$database->ID) );
+		else:
+			return FALSE;
+		endif;
+	}
+
 	public function get_ID(){
 		return $this->ID;
 	}

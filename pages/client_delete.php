@@ -23,7 +23,7 @@ function jadmin_page_client_delete(){
 		$delete->delete_client( $client->ID );
 ?>
 		<div id="message" class="updated">
-			<p>The client deleted succesfuly.</p>
+			<p>The client has been deleted succesfuly.</p>
 		</div>
 <?php
 	endif;

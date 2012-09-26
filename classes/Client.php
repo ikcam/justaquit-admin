@@ -64,12 +64,18 @@ class Client extends JAdmin {
 		global $wpdb;
 		$table = $wpdb->prefix.'clients';
 
-		$query = "DELETE FROM $table WHERE ID = %d;";
+		$client = get_client( $ID );
 
-		if( has_domains($ID) )
-			return 'Error: This client has domains.';
-		else
-			return $wpdb->query( $wpdb->prepare($query, $ID) );
+		if( is_array($client) ):
+			if( has_domains($client->ID) )
+				return FALSE;
+			else:
+				$query = "DELETE FROM $table WHERE ID = %d;";
+				$wpdb->query( $wpdb->prepare($query, $client->ID) );
+			endif;
+		else:
+			return FALSE;
+		endif;
 	}
 
 	public function update_client( $ID ){

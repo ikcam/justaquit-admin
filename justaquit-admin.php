@@ -29,9 +29,12 @@ require_once(BASEPATH.'pages/client_delete.php');
 // Domains
 require_once(BASEPATH.'pages/domains.php');
 require_once(BASEPATH.'pages/domain_add.php');
-//require_once(plugin_dir_path(__FILE__).'pages/domain_delete.php');
+require_once(BASEPATH.'pages/domain_delete.php');
 // Databases
 require_once(BASEPATH.'pages/databases.php');
+require_once(BASEPATH.'pages/database_add.php');
+require_once(BASEPATH.'pages/database_delete.php');
+require_once(BASEPATH.'pages/database_edit.php');
 // Settings
 require_once(BASEPATH.'pages/settings.php');
 
