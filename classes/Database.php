@@ -108,8 +108,8 @@ class Database extends JAdmin {
 			$query = "DROP DATABASE $database->name;";
 			$wpdb->query( $query );
 
-			$query = "DROP USER $database->user;";
-			$wpdb->query( $wpdb->prepare($query) );
+			$query = "DROP USER %s@'localhost';";
+			$wpdb->query( $wpdb->prepare($query, $database->user) );
 
 			$query = "DELETE FROM $table WHERE ID = %d;";
 			$wpdb->query( $wpdb->prepare($query,$database->ID) );
