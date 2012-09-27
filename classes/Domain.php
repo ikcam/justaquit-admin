@@ -335,7 +335,7 @@ class Domain extends JAdmin {
 			endif;
 
 			$this->update_folder( $domain->ID );
-			$this->destoy_vhost( $domain->ID );
+			$this->destroy_vhost( $domain->ID );
 			$this->create_vhost();
 			$this->update_wordpress( $domain->ID );
 
