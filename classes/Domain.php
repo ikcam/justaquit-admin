@@ -131,8 +131,7 @@ class Domain extends JAdmin {
 
 		$dir = $settings['server_folder'].$this->url;
 		$exec = 'rm -rf '.$dir;
-		echo $exec."<br />";
-		//shell_exec($exec);
+		shell_exec($exec);
 	}
 
 	private function create_vhost(){
@@ -164,8 +163,7 @@ class Domain extends JAdmin {
 		$exec = 'a2dissite '.$this->url;
 		$dir  = $settings['server_apache'].$this->url;
 		$exec = 'rm -f '.$dir;
-		echo $exec."<br />";
-		//shell_exec( $exec );
+		shell_exec( $exec );
 	}
 
 	private function create_wordpress( $db_id ){
@@ -256,7 +254,7 @@ class Domain extends JAdmin {
 			// Destoy folder
 			$this->detroy_folder();
 			// Destroy Virtual Host
-			$this->destoy_vhost();
+			$this->destroy_vhost();
 			// Remove from database
 			$query = "DELETE FROM $table WHERE ID = %d";
 			$wpdb->query( $wpdb->prepare($query, $domain->ID) );
