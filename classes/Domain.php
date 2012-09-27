@@ -230,9 +230,16 @@ class Domain extends JAdmin {
 	private function update_wordpress( $ID ){
 		global $wpdb;
 		$database = get_database_by_domain( $ID );
-		$domain = get_domain( $ID );
+		$domain   = get_domain( $ID );
 
-		
+		$query = "UPDATE wp_posts.$database->name SET post_content = REPLACE( post_content, %s, %s );"
+		$wpdb->query( $wpdb->prepare($query, $domain->url, $this->url) );
+		$query = "UPDATE wp_posts.$database->name SET guid = REPLACE( guid, %s, %s );"
+		$wpdb->query( $wpdb->prepare($query, $domain->url, $this->url) );
+		$query = "UPDATE wp_options.$database->name SET option_value = REPLACE( option_value, %s, %s );"
+		$wpdb->query( $wpdb->prepare($query, $domain->url, $this->url) );
+		$query = "UPDATE wp_postmeta.$database->name SET meta_value = REPLACE( meta_value, %s, %s );"
+		$wpdb->query( $wpdb->prepare($query, $domain->url, $this->url) );
 	}
 
 	public function add_domain(){
