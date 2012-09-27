@@ -15,7 +15,7 @@ function jadmin_page_database_delete(){
 		$delete->delete_database( $database->ID );
 ?>
 <div id="message" class="updated">
-	<p>The detabase has been deleted succesfuly.</p>
+	<p>The database has been deleted succesfuly.</p>
 </div>
 <?php
 	endif;

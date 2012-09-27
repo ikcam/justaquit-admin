@@ -111,6 +111,16 @@ function get_databases(){
 	return $databases;	
 }
 
+function get_database_by_domain( $ID ){
+	global $wpdb;
+	$table = $wpdb->prefix.'databases';
+
+	$query = "SELECT * FROM $table WHERE domain_id = %d;";
+	$database = $wpdb->get_row( $wpdb->prepare($query, $ID) );
+
+	return $database;
+}
+
 /*
 * Name:
 * 	has_domains( $ID )

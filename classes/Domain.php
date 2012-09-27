@@ -61,6 +61,22 @@ class Domain extends JAdmin {
 		endif;
 	}
 
+	private function destroy_linode_did( $did ){
+		global $settings;
+
+		require_once('Services/Linode.php');
+		try {
+			$linode = new Services_Linode($settings['linode_key']);
+			$linode = $linode->domain_delete(
+					array(
+						'DomainID'    => $did
+					)
+				);
+		} catch (Services_Linode_Exception $e) {
+			echo $e->getMessage();
+		}
+	}
+
 	private function create_linode_rid(){
 		global $settings;
 
@@ -85,12 +101,38 @@ class Domain extends JAdmin {
 		endif;
 	}
 
+	private function destroy_linode_rid( $did, $rid ){
+		global $settings;
+
+		require_once('Services/Linode.php');
+		try{
+			$linode = new Services_Linode($settings['linode_key']);
+			$linode = $linode->domain_resource_delete(
+					array(
+						'DomainID'   => $did,
+						'ResourceID' => $rid 
+					)
+				);
+		} catch (Services_Linode_Exception $e) {
+			echo $e->getMessage();
+		}
+	}
+
 	private function create_folder(){
 		global $settings;
 
 		$dir = $settings['server_folder'].$this->url.'/';
 		$exec = 'mkdir '.$dir;
 		shell_exec($exec);
+	}
+
+	private function detroy_folder(){
+		global $settings;
+
+		$dir = $settings['server_folder'].$this->url;
+		$exec = 'rm -rf '.$dir;
+		echo $exec."<br />";
+		//shell_exec($exec);
 	}
 
 	private function create_vhost(){
@@ -114,6 +156,16 @@ class Domain extends JAdmin {
 		// Enable Virtual Host
 		$exec = 'a2ensite '.$this->url;
 		shell_exec($exec);	
+	}
+
+	private function destroy_vhost(){
+		global $settings;
+
+		$exec = 'a2dissite '.$this->url;
+		$dir  = $settings['server_apache'].$this->url;
+		$exec = 'rm -f '.$dir;
+		echo $exec."<br />";
+		//shell_exec( $exec );
 	}
 
 	private function create_wordpress( $db_id ){
@@ -183,6 +235,31 @@ class Domain extends JAdmin {
 			restart_apache();
 		else:
 			echo 'Domain already exists';
+		endif;
+	}
+
+	public function delete_domain( $ID ){
+		global $wpdb;
+		$table = $wpdb->prefix.'domains';
+
+		$domain = get_domain( $ID );
+		if( $domain == NULL ):
+		else:
+			if( $domain->linode_rid == 0 )
+				$this->destroy_linode_did( $domain->linode_did );
+			else
+				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
+			// Destoy Database
+			$database = get_database_by_domain( $domain->ID );
+			$db_delete = new Database( $domain->ID );
+			$db_delete->delete_database( $database->ID );
+			// Destoy folder
+			$this->detroy_folder();
+			// Destroy Virtual Host
+			$this->destoy_vhost();
+			// Remove from database
+			$query = "DELETE FROM $table WHERE ID = %d";
+			$wpdb->query( $wpdb->prepare($query, $domain->ID) );
 		endif;
 	}
 
