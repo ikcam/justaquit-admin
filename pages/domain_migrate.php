@@ -15,7 +15,7 @@ function jadmin_page_domain_migrate(){
 <?php
 		else:
 			$update = new Domain( $domain->client_id, $domain->title, $url, $linode_did, $domain->priority, $doimain->wordpress, $domain->author );
-			$update = update_domain( $domain->ID );
+			$update->update_domain( $domain->ID );
 		endif;
 
 	endif;
