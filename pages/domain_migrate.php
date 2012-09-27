@@ -15,7 +15,7 @@ function jadmin_page_domain_migrate(){
 					<select name="domain_old">
 					<?php
 						$domains = get_domains();
-						if( $domain != NULL ):
+						if( $domains != NULL ):
 							foreach( $domains as $domain ):
 					?>
 						<option value="<?php echo $domain->ID ?>" <?php if( $ID == $domain->ID ) echo 'selected'; ?>><?php echo $domain->url ?></option>
