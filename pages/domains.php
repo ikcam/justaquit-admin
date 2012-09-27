@@ -47,7 +47,7 @@ function jadmin_page_domains(){
 						<span class="delete"><a class="submitdelete" href="?page=jadmin_domains&amp;action=delete&amp;ID=<?php echo $domain->ID ?>" onclick="if ( confirm( 'You are about to delete the domain \'<?php echo $domain->title ?>\'\n \'Cancel\' to return, \'Accept\' to erase.' ) ) { return true;}return false;">Delete</a></span>
 					</div>
 				</td>
-				<td class="column-url"><a href="http://<?php echo $domain->url ?>" target="_blank">http://<?php echo $domain->url ?></a></td>
+				<td class="column-url"><a href="http://<?php echo $domain->url ?>" target="_blank"><?php echo $domain->url ?></a></td>
 				<td class="column-priority"><?php echo $domain->priority ?></td>
 				<td class="column-client">
 				<?php
