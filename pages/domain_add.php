@@ -5,7 +5,6 @@ function jadmin_page_domain_add(){
 	if( $_POST['submit'] ) :
 ?>
 <div id="message" class="updated">
-	<ul>
 <?php
 		$client_id  = $_POST['client_id'];
 		$title      = $_POST['title'];
@@ -22,7 +21,7 @@ function jadmin_page_domain_add(){
 		$domain = new Domain( $client_id, $title, $url, $linode_did, $priority, $wordpress, $author );
 		$domain->add_domain();
 ?>
-	</ul>
+	<p>New Domain created.</p>
 </div>
 <?php
 	endif;

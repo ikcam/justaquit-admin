@@ -166,6 +166,7 @@ class Domain extends JAdmin {
 		shell_exec( $exec );
 		$dir  = $settings['server_apache'].$this->url;
 		$exec = 'rm -f '.$dir;
+		echo $exec;
 		shell_exec( $exec );
 	}
 
