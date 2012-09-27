@@ -2,6 +2,8 @@
 function jadmin_page_domains(){
 	if( $_GET['action'] == 'add' ):
 		jadmin_page_domain_add();
+	elseif( $_GET['action'] == 'migrate' ):
+		jadmin_page_domain_migrate();
 	else:
 		if( $_GET['action'] == 'delete' ):
 			jadmin_page_domain_delete();
