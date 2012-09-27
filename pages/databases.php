@@ -51,11 +51,12 @@ function jadmin_page_databases(){
 				<td class="column-password"><?php echo $database->password ?></td>
 				<td class="column-password">
 				<?php
-					$domain = get_domain( $database->domain_id );
-					if( $domain_id == 0 )
+					if( $database->domain_id == 0 ) :
 						echo 'None';
-					else
+					else:
+						$domain = get_domain( $database->domain_id );
 						echo '<a href="http://'.$domain->url.'" target="_blank">'.$domain->url.'</a>';
+					endif;
 				?>
 				</td>
 			</tr>
