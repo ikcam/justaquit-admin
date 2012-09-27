@@ -316,7 +316,7 @@ class Domain extends JAdmin {
 		global $wpdb;
 		$table = $wpdb->prefix.'domains';
 
-		$domain = get_domain( $ID )
+		$domain = get_domain( $ID );
 		if( $domain == NULL || $this->check_domain() == FALSE ):
 		else:
 			if( $this->linode_did == 0 && $domain->linode_rid == 0 ):
