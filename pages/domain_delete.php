@@ -4,7 +4,7 @@ function jadmin_page_domain_delete(){
 
 	$domain = get_domain( $ID );
 
-	if( $domain == NULL )
+	if( $domain == NULL ) :
 ?>
 <div id="message" class="error">
 	<p>The domain that you are looking for doesn't exists.</p>
