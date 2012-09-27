@@ -30,6 +30,7 @@ require_once(BASEPATH.'pages/client_delete.php');
 require_once(BASEPATH.'pages/domains.php');
 require_once(BASEPATH.'pages/domain_add.php');
 require_once(BASEPATH.'pages/domain_delete.php');
+require_once(BASEPATH.'pages/domain_migrate.php');
 // Databases
 require_once(BASEPATH.'pages/databases.php');
 require_once(BASEPATH.'pages/database_add.php');

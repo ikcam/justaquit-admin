@@ -22,6 +22,7 @@ function jadmin_page_databases(){
 				<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
 				<th scope="col" id="user" class="manage-column column-user"><span>User</span></th>
 				<th scope="col" id="password" class="manage-column column-password"><span>Password</span></th>
+				<th scope="col" id="domain" class="manage-column column-domain"><span>Linked Domain</span></th>
 			</tr>
 		</thead>
 		<tfoot>
@@ -29,6 +30,7 @@ function jadmin_page_databases(){
 				<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
 				<th scope="col" id="user" class="manage-column column-user"><span>User</span></th>
 				<th scope="col" id="password" class="manage-column column-password"><span>Password</span></th>
+				<th scope="col" id="domain" class="manage-column column-domain"><span>Linked Domain</span></th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
@@ -47,6 +49,15 @@ function jadmin_page_databases(){
 				</td>
 				<td class="column-user"><?php echo $database->user ?></td>
 				<td class="column-password"><?php echo $database->password ?></td>
+				<td class="column-password">
+				<?php
+					$domain = get_domain( $database->domain_id );
+					if( $domain_id == 0 )
+						echo 'None';
+					else
+						echo '<a href="http://'.$domain->url.'" target="_blank">'.$domain->url.'</a>;
+				?>
+				</td>
 			</tr>
 		<?php
 				endforeach;
