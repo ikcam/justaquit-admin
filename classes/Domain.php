@@ -154,7 +154,6 @@ class Domain extends JAdmin {
 		fclose( $file );
 		// Enable Virtual Host
 		$exec = "a2ensite $this->url";
-		echo $exec;
 		shell_exec($exec);	
 	}
 
@@ -162,11 +161,9 @@ class Domain extends JAdmin {
 		global $settings;
 
 		$exec = "a2dissite $this->url";
-		echo $exec;
 		shell_exec( $exec );
 		$dir  = $settings['server_apache'].$this->url;
 		$exec = 'rm -f '.$dir;
-		echo $exec;
 		shell_exec( $exec );
 	}
 
@@ -262,6 +259,8 @@ class Domain extends JAdmin {
 			// Remove from database
 			$query = "DELETE FROM $table WHERE ID = %d";
 			$wpdb->query( $wpdb->prepare($query, $domain->ID) );
+			//Restart Apache
+			restart_apache();
 		endif;
 	}
 
