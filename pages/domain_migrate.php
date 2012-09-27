@@ -21,6 +21,7 @@ function jadmin_page_domain_migrate(){
 						<option value="<?php echo $domain->ID ?>" <?php if( $ID == $domain->ID ) echo 'selected'; ?>><?php echo $domain->url ?></option>
 					<?php
 							endforeach;
+						endif;
 					?>
 					</select>
 				</td>
