@@ -218,7 +218,6 @@ function get_data( $url ){
 }
 
 function restart_apache(){
-	$exec = BASEPATH .'exec.sh';
-	shell_exec($exec);
+	shell_exec('service apache2 restart');
 }
 ?>

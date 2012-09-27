@@ -153,14 +153,17 @@ class Domain extends JAdmin {
 		fwrite( $file, $content );
 		fclose( $file );
 		// Enable Virtual Host
-		$exec = 'a2ensite '.$this->url;
+		$exec = "a2ensite $this->url";
+		echo $exec;
 		shell_exec($exec);	
 	}
 
 	private function destroy_vhost(){
 		global $settings;
 
-		$exec = 'a2dissite '.$this->url;
+		$exec = "a2dissite $this->url";
+		echo $exec;
+		shell_exec( $exec );
 		$dir  = $settings['server_apache'].$this->url;
 		$exec = 'rm -f '.$dir;
 		shell_exec( $exec );
