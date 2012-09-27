@@ -55,7 +55,7 @@ function jadmin_page_databases(){
 					if( $domain_id == 0 )
 						echo 'None';
 					else
-						echo '<a href="http://'.$domain->url.'" target="_blank">'.$domain->url.'</a>;
+						echo '<a href="http://'.$domain->url.'" target="_blank">'.$domain->url.'</a>';
 				?>
 				</td>
 			</tr>
