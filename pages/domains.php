@@ -50,7 +50,21 @@ function jadmin_page_domains(){
 					</div>
 				</td>
 				<td class="column-url"><a href="http://<?php echo $domain->url ?>" target="_blank"><?php echo $domain->url ?></a></td>
-				<td class="column-priority"><?php echo $domain->priority ?></td>
+				<td class="column-priority">
+				<?php
+					switch($domain->priority){
+						case 1:
+							echo 'Low';
+							break;
+						case 2:
+							echo 'Normal';
+							break;
+						case 3:
+							echo 'High';
+							break;
+					}
+				?>
+				</td>
 				<td class="column-client">
 				<?php
 					$user = get_client( $domain->client_id );
