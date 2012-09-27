@@ -320,15 +320,19 @@ class Domain extends JAdmin {
 		if( $domain == NULL || $this->check_domain() == FALSE ):
 		else:
 			if( $this->linode_did == 0 && $domain->linode_rid == 0 ):
+				// Old Domain to New Domain  
 				$this->update_linode_did( $domain->linode_did );
 			elseif( $this->linode_did == 0 && $domain->linode_rid != 0 ):
+				// Old Subdomain to New Domain
 				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
 				$this->create_linode_did();
 			elseif( $this->linode_did != 0 && $domain->linode_rid == 0 ):
+				// Old Domain to New Subdomain
 				$this->destoy_linode_did( $domain->linode_did );
+				$this->create_linode_did();
 				$this->create_linode_rid();
 			else:
-				$this->destroy_linode_did( $domain->linode_did );
+				// Old Subdomain to New Subdomain
 				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
 				$this->create_linode_did();
 				$this->create_linode_rid();
