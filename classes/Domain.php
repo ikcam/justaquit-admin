@@ -77,6 +77,26 @@ class Domain extends JAdmin {
 		}
 	}
 
+	private function update_linode_did( $did ){
+		global $settings;
+
+		require_once('Services/Linode.php');
+		try {
+			$linode = new Services_Linode($settings['linode_key']);
+			$linode = $linode->domain_update(
+					array(
+						'DomainID'    => $did,
+						'Domain'      => $this->url
+					)
+				);
+			$this->linode_did = $linode['DATA']['DomainID'];
+			$this->linode_rid = 0;
+		} catch (Services_Linode_Exception $e) {
+			echo $e->getMessage();
+		}
+
+	}
+
 	private function create_linode_rid(){
 		global $settings;
 
@@ -134,6 +154,17 @@ class Domain extends JAdmin {
 		shell_exec($exec);
 	}
 
+	private function update_folder( $ID ){
+		global  $settings;
+
+		$domain = get_domain( $ID );
+
+		$dir1 = $settings['server_folder'].$domain->url;
+		$dir2 = $settings['server_folder'].$this->url;
+		$exec = 'mv '.$dir1.' '.$dir2;
+		shell_exec($exec);
+	}
+
 	private function create_vhost(){
 		global $settings;
 		// Read file
@@ -157,12 +188,14 @@ class Domain extends JAdmin {
 		shell_exec($exec);	
 	}
 
-	private function destroy_vhost(){
+	private function destroy_vhost( $ID ){
 		global $settings;
+		
+		$domain = get_domain( $ID );
 
-		$exec = "a2dissite $this->url";
+		$exec = "a2dissite $domain->url";
 		shell_exec( $exec );
-		$dir  = $settings['server_apache'].$this->url;
+		$dir  = $settings['server_apache'].$domain->url;
 		$exec = 'rm -f '.$dir;
 		shell_exec( $exec );
 	}
@@ -192,6 +225,14 @@ class Domain extends JAdmin {
 		// Change file Owner
 		$exec = 'chown -hR '.$settings['server_user'].':'.$settings['server_user'].' '.$dir;
 		shell_exec($exec);
+	}
+
+	private function update_wordpress( $ID ){
+		global $wpdb;
+		$database = get_database_by_domain( $ID );
+		$domain = get_domain( $ID );
+
+		
 	}
 
 	public function add_domain(){
@@ -255,7 +296,7 @@ class Domain extends JAdmin {
 			// Destoy folder
 			$this->detroy_folder();
 			// Destroy Virtual Host
-			$this->destroy_vhost();
+			$this->destroy_vhost( $domain->ID );
 			// Remove from database
 			$query = "DELETE FROM $table WHERE ID = %d";
 			$wpdb->query( $wpdb->prepare($query, $domain->ID) );
@@ -264,13 +305,46 @@ class Domain extends JAdmin {
 		endif;
 	}
 
-	public function get_ID(){
-		return $this->ID;
-	}
-
-	public function update_domain(){
+	public function update_domain( $ID ){
 		global $wpdb;
 		$table = $wpdb->prefix.'domains';
+
+		$domain = get_domain( $ID )
+		if( $domain == NULL || $this->check_domain() == FALSE ):
+		else:
+			if( $this->linode_did == 0 && $domain->linode_rid == 0 ):
+				$this->update_linode_did( $domain->linode_did );
+			elseif( $this->linode_did == 0 && $domain->linode_rid != 0 ):
+				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
+				$this->create_linode_did();
+			elseif( $this->linode_did != 0 && $domain->linode_rid == 0 ):
+				$this->destoy_linode_did( $domain->linode_did );
+				$this->create_linode_rid();
+			else:
+				$this->destroy_linode_did( $domain->linode_did );
+				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
+				$this->create_linode_did();
+				$this->create_linode_rid();
+			endif;
+
+			$this->update_folder( $domain->ID );
+			$this->destoy_vhost( $domain->ID );
+			$this->create_vhost();
+			$this->update_wordpress( $domain->ID );
+
+			$data = array(
+					'url' => $this->url,
+					'linode_did' => $this->linode_did,
+					'linode_rid' => $this->linode_rid
+				);
+			$where = array( 'ID' => $domain->ID );
+			$format = array( '%s', '%d', '%d' );
+			$wpdb->update( $table, $data, $where, $format );
+		endif;
+	}
+
+	public function get_ID(){
+		return $this->ID;
 	}
 }
 
