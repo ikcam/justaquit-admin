@@ -12,9 +12,14 @@ function jadmin_page_tools(){
 	<h2>Tools</h2>
 	<table class="form-table">
 	<tbody>
-		<form class="form-table">
-			<p class="submit"><input type="submit" name="submit" value="Add New Client" class="button-primary" /></p>
-		</form>
+		<tr valign="top">
+			<th scope="row">Update Plugin</th>
+		</tr>
+		<td>
+			<form method="post" action="">
+				<p class="submit"><input type="submit" name="submit" value="Add New Client" class="button-primary" /></p>
+			</form>
+		</td>
 	</tbody>
 	</table>
 </div>
