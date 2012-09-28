@@ -9,7 +9,7 @@ function jadmin_page_tools(){
 	elseif( $_POST['restart_apache'] ):
 ?>
 <div id="message" class="updated">
-	<p><?php echo restar_apache() ?></p>
+	<p><?php echo restart_apache() ?></p>
 </div>
 <?php
 	endif;
