@@ -196,6 +196,12 @@ function get_linode_domain_name( $ID ){
 	return $name;
 }
 
+function update_plugin(){
+	$exec = 'cd '.BASEPATH.'&& git pull';
+	return shell_exec( $exec );
+}
+
+
 /*
 * Name:
 * 	get_data( $url )
