@@ -14,6 +14,7 @@ function jadmin_page_main(){
 			<li><code>sudo pear channel-discover pear.keremdurmus.com</code></li>
 			<li><code>sudo pear install krmdrms/Services_Linode</code></li>
 		</ul>
+		<p>Your WordPress installation should be running as <code>root</code> and your <code>wp-config.php</code> "user" and "password" should be ones of your MySQL <code>root</code> otherwise won't see the magic of this script.</p>
 
 		<h3>Firsts tasks:</h3>
 		<ul style="padding-left:20px;list-style:disc;">
