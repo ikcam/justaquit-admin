@@ -114,6 +114,9 @@ class JAdmin {
 		if( $input['server_apache'] == NULL )
 			$input['server_apache'] = '/etc/apache2/sites-available/';
 
+		if( $input['server_apache2'] == NULL )
+			$input['server_apache2'] = '/etc/apache2/sites-enabled/';
+
 		if( $input['database_prefix'] == NULL )
 			$input['database_prefix'] = 'client_';
 
