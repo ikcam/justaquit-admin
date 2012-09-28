@@ -9,6 +9,7 @@ function jadmin_page_tools(){
 	endif;
 ?>
 <div class="wrap">
+	<div id="icon-tools" class="icon32"><br></div>
 	<h2>Tools</h2>
 	<table class="form-table">
 	<tbody>
