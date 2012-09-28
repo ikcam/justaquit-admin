@@ -22,7 +22,7 @@ Before go to settings run this commands on the bash of your Linode Server:
 * `$ sudo pear channel-discover pear.keremdurmus.com`
 * `$ sudo pear install krmdrms/Services_Linode`
 
-Your WordPress installation should be running as --`root` and your --`wp-config.php` "user" and "password" should be ones of your MySQL -- `root` otherwise won't see the magic of this script.</p>
+Your WordPress installation should be running as `root` and your `wp-config.php` "user" and "password" should be ones of your MySQL `root` otherwise won't see the magic of this script.
 
 Firsts tasks:
 -------------
