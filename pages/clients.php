@@ -24,6 +24,7 @@ function jadmin_page_clients(){
 				<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
 				<th scope="col" id="author" class="manage-column column-author"><span>Author</span></th>
 				<th scope="col" id="editor" class="manage-column column-editor"><span>Last Edit</span></th>
+				<th scope="col" id="count" class="manage-column column-count"><span>Domain Count</span></th>
 			</tr>
 		</thead>
 		<tfoot>
@@ -33,6 +34,7 @@ function jadmin_page_clients(){
 				<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
 				<th scope="col" id="author" class="manage-column column-author"><span>Author</span></th>
 				<th scope="col" id="editor" class="manage-column column-editor"><span>Last Edit</span></th>
+				<th scope="col" id="count" class="manage-column column-count"><span>Domain Count</span></th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
@@ -64,6 +66,7 @@ function jadmin_page_clients(){
 				?>
 				</td>
 			</tr>
+			<tr class="column-count"><?php echo get_domains_count( $domain->ID ) ?></tr>
 		<?php
 				endforeach;
 			endif;
