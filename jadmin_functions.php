@@ -224,6 +224,6 @@ function get_data( $url ){
 }
 
 function restart_apache(){
-	shell_exec('/etc/init.d/apache2 reload');
+	return shell_exec('/etc/init.d/apache2 restart');
 }
 ?>
