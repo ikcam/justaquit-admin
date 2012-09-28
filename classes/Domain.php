@@ -184,7 +184,7 @@ class Domain extends JAdmin {
 		fwrite( $file, $content );
 		fclose( $file );
 		// Enable Virtual Host
-		$exec = "a2ensite $this->url";
+		$exec = 'ln -f '.$settings['server_apache'].$this->url.' '.$settings['server_apache2'].$this->url;
 		shell_exec($exec);	
 	}
 
@@ -193,7 +193,8 @@ class Domain extends JAdmin {
 		
 		$domain = get_domain( $ID );
 
-		$exec = "a2dissite $domain->url";
+		$dir  = $settings['server_apache2'].$domain->url;
+		$exec = 'rm -f '.$dir;
 		shell_exec( $exec );
 		$dir  = $settings['server_apache'].$domain->url;
 		$exec = 'rm -f '.$dir;
