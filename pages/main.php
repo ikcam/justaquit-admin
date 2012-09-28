@@ -6,13 +6,31 @@ function jadmin_page_main(){
 	<h2>JustAquit Admin Center</h2>
 
 	<table class="form-table">
+		<h3>Requirements</h3>
+		<p>Before go to settings run this commands on the bash of your Linode Server:</p>
+		<ul style="padding-left:20px;list-style:disc;">
+			<li><code>sudo pear install Net_URL2-0.3.1</code></li>
+			<li><code>sudo pear install HTTP_Request2-0.5.2</code></li>
+			<li><code>sudo pear channel-discover pear.keremdurmus.com</code></li>
+			<li><code>sudo pear install krmdrms/Services_Linode</code></li>
+		</ul>
+
+		<h3>Firsts tasks:</h3>
+		<ul style="padding-left:20px;list-style:disc;">
+			<li>Go to settings and setup your Linode API Key.</li>
+			<li>Your Linode IP number.</li>
+			<li>Folder locations.</li>
+			<li>User owner.</li>
+			<li>Database prefix.</li>
+		</ul>
+
 		<h3>Comming soon:</h3>
 		<ul style="padding-left:20px;list-style:disc;">
 			<li>Use <code>wp_nonce_field</code> in forms.</li>
-			<li>Add test mode</li>
-			<li>Use <a href="//name.com" target="_black">Name.com</a> API for domain management.
-			<li>More Linode functions</li>
-			<li>Add/manage clusters</li>
+			<li>Add test mode.</li>
+			<li>Use <a href="//name.com" target="_black">Name.com</a> API for domain management.</li>
+			<li>More Linode functions.</li>
+			<li>Add/manage clusters.</li>
 		</ul>
 		<p>&nbsp;</p>
 		<p>
