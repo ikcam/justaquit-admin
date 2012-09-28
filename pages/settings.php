@@ -47,10 +47,17 @@ function jadmin_page_settings(){
 				</td>
 			</tr>
 			<tr valign="top">
-				<th scope="row">Apache Folder</th>
+				<th scope="row">Sites-available Folder</th>
 				<td>
 					<input type="text" name="jadmin_settings[server_apache]" value="<?php echo $settings['server_apache'] ?>" />
 					<span class="description">Location of the "sites-available" apache folder.</span>
+				</td>
+			</tr>
+			<tr valign="top">
+				<th scope="row">Sites-enabled Folder</th>
+				<td>
+					<input type="text" name="jadmin_settings[server_apache2]" value="<?php echo $settings['server_apache2'] ?>" />
+					<span class="description">Location of the "sites-enabled" apache folder.</span>
 				</td>
 			</tr>
 			<tr valign="top">
