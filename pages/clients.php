@@ -66,7 +66,7 @@ function jadmin_page_clients(){
 				?>
 				</td>
 			</tr>
-			<tr class="column-count"><?php echo get_domains_count( $domain->ID ) ?></tr>
+			<tr class="column-count"><?php echo get_domains_count( $client->ID ) ?></tr>
 		<?php
 				endforeach;
 			endif;
