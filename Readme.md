@@ -35,12 +35,10 @@ Firsts tasks:
 
 Comming soon:
 -------------
-* Use -- `wp_nonce_field` in forms.
+* Use `wp_nonce_field` in forms.
 * Add test mode.
 * Use [Name.com](http://name.com) API for domain management.
 * More Linode functions.
 * Add/manage clusters.
 
-Forked in [GitHub](https://github.com/ikcam/justaquit-admin) | [Report an issue](https://github.com/ikcam/justaquit-admin/issues)
-
-Creator: [Irving Kcam](http://ikcam.com) | Email: [me@ikcam.com](mailto:me@ikcam) |	License: GPL2
+License: GPL2
