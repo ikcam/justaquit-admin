@@ -352,6 +352,8 @@ class Domain extends JAdmin {
 			$where = array( 'ID' => $domain->ID );
 			$format = array( '%s', '%d', '%d' );
 			$wpdb->update( $table, $data, $where, $format );
+
+			restart_apache();
 		endif;
 	}
 
