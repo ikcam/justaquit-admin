@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_tools(){
-	if( $_POST['update'] ):
+	if( $_POST['tool_update'] ):
 ?>
 <div id="message" class="updated">
 	<p><?php echo update_plugin() ?></p>
@@ -17,7 +17,7 @@ function jadmin_page_tools(){
 		</tr>
 		<td>
 			<form method="post" action="">
-				<p class="submit"><input type="submit" name="submit" value="Add New Client" class="button-primary" /></p>
+				<p class="submit"><input type="submit" name="tool_update" value="Add New Client" class="button-primary" /></p>
 			</form>
 		</td>
 	</tbody>
