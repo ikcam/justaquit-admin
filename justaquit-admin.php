@@ -36,6 +36,8 @@ require_once(BASEPATH.'pages/databases.php');
 require_once(BASEPATH.'pages/database_add.php');
 require_once(BASEPATH.'pages/database_delete.php');
 require_once(BASEPATH.'pages/database_edit.php');
+// Tools
+require_once(BASEPATH.'pages/tools.php');
 // Settings
 require_once(BASEPATH.'pages/settings.php');
 
@@ -124,6 +126,7 @@ class JAdmin {
 		add_submenu_page( 'jadmin', 'Domains', 'Domains', 'administrator', 'jadmin_domains', 'jadmin_page_domains' );
 		add_submenu_page( 'jadmin', 'Databases', 'Databases', 'administrator', 'jadmin_databases', 'jadmin_page_databases' );
 		add_submenu_page( 'jadmin', 'Settings', 'Settings', 'administrator', 'jadmin_settings', 'jadmin_page_settings' );
+		add_submenu_page( 'jadmin', 'Tools', 'Tools', 'administrator', 'jadmin_tools', 'jadmin_page_tools' );
 	}
 }
 
