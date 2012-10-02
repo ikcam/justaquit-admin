@@ -37,7 +37,7 @@ function jadmin_page_domain_edit(){
 	<h2>
 		Edit Domain
 	</h2>
-
+<?php $domain =  get_domain( $ID ); ?>
 	<form action="" method="post">
 		<table class="form-table">
 		<tody>
