@@ -48,7 +48,7 @@ function jadmin_page_databases(){
 					</div>
 				</td>
 				<td class="column-user"><?php echo $database->user ?></td>
-				<td class="column-password"><?php echo $database->password ?></td>
+				<td class="column-password"><?php echo esc_attr($database->password) ?></td>
 				<td class="column-password">
 				<?php
 					if( $database->domain_id == 0 ) :
