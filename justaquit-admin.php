@@ -29,6 +29,7 @@ require_once(BASEPATH.'pages/client_delete.php');
 // Domains
 require_once(BASEPATH.'pages/domains.php');
 require_once(BASEPATH.'pages/domain_add.php');
+require_once(BASEPATH.'pages/domain_edit.php');
 require_once(BASEPATH.'pages/domain_delete.php');
 require_once(BASEPATH.'pages/domain_migrate.php');
 // Databases
