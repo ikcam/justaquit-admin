@@ -2,6 +2,8 @@
 function jadmin_page_domains(){
 	if( $_GET['action'] == 'add' ):
 		jadmin_page_domain_add();
+	elseif( $_GET['action'] == 'edit' ):
+		jadmin_page_domain_edit();
 	elseif( $_GET['action'] == 'migrate' ):
 		jadmin_page_domain_migrate();
 	else:
@@ -45,6 +47,7 @@ function jadmin_page_domains(){
 				<td class="column-title">
 					<strong><?php echo $domain->title ?></strong>
 					<div class="row-actions">
+						<span class="edit"><a href="?page=jadmin_domains&amp;action=edit&amp;ID=<?php echo $domain->ID ?>">Edit</a> |</span>
 						<span class="edit"><a href="?page=jadmin_domains&amp;action=migrate&amp;ID=<?php echo $domain->ID ?>">Migrate</a> |</span>
 						<span class="delete"><a class="submitdelete" href="?page=jadmin_domains&amp;action=delete&amp;ID=<?php echo $domain->ID ?>" onclick="if ( confirm( 'You are about to delete the domain \'<?php echo $domain->title ?>\'\n \'Cancel\' to return, \'Accept\' to erase.' ) ) { return true;}return false;">Delete</a></span>
 					</div>
