@@ -313,6 +313,21 @@ class Domain extends JAdmin {
 		endif;
 	}
 
+	public function update_domain_info( $ID ){
+		global $wpdb;
+		$table = $wpdb->prefix.'domains';
+
+		$data = array(
+				'title' => $this->title,
+				'priority' => $this->priority,
+				'client_id' => $this->client_id,
+			);
+		$where = array( 'ID' => $ID );
+		$format = array( '%s', '%d', '%d' );
+
+		return $wpdb->update( $table, $data, $where, $format );
+	}
+
 	public function update_domain( $ID ){
 		global $wpdb;
 		$table = $wpdb->prefix.'domains';
