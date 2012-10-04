@@ -249,10 +249,10 @@ class Domain extends JAdmin {
 
 		// Step 1: Verify if domains already exists.
 		if( $this->check_domain() ) :
-			// Step 2: Create Linode Domain ID
-			$this->create_linode_did();
 			// Step 3: Create Linode Resorce ID
 			$this->create_linode_rid();
+			// Step 2: Create Linode Domain ID
+			$this->create_linode_did();
 			// Step 4: Insert information into database.
 			$data = array(
 					'title'         => $this->title,
