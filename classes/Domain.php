@@ -101,6 +101,7 @@ class Domain extends JAdmin {
 		global $settings;
 
 		if( $this->linode_did != 0 ):
+			$this->url = str_replace( '.', '', $this->url);
 			$this->url = $this->url.'.'.get_linode_domain_name( $this->linode_did );
 
 			require_once('Services/Linode.php');
@@ -184,7 +185,7 @@ class Domain extends JAdmin {
 		fwrite( $file, $content );
 		fclose( $file );
 		// Enable Virtual Host
-		$exec = 'ln -f '.$settings['server_apache'].$this->url.' '.$settings['server_apache2'].$this->url;
+		$exec = 'ln -s '.$settings['server_apache'].$this->url.' '.$settings['server_apache2'].$this->url;
 		shell_exec($exec);	
 	}
 
@@ -345,13 +346,13 @@ class Domain extends JAdmin {
 			elseif( $this->linode_did != 0 && $domain->linode_rid == 0 ):
 				// Old Domain to New Subdomain
 				$this->destoy_linode_did( $domain->linode_did );
-				$this->create_linode_did();
 				$this->create_linode_rid();
+				$this->create_linode_did();
 			else:
 				// Old Subdomain to New Subdomain
 				$this->destroy_linode_rid( $domain->linode_did, $domain->linode_rid );
-				$this->create_linode_did();
 				$this->create_linode_rid();
+				$this->create_linode_did();
 			endif;
 
 			$this->update_folder( $domain->ID );
