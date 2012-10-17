@@ -40,6 +40,7 @@ class Database extends JAdmin {
 
 	private function set_name(){
 		global $wpdb;
+		$table = $wpdb->prefix.'databases';
 
 		$name = substr( $this->basename, 0, 25);
 		$i=0;
@@ -57,6 +58,7 @@ class Database extends JAdmin {
 
 	private function set_user(){
 		global $wpdb;
+		$table = $wpdb->prefix.'databases';
 
 		$user = substr( $this->basename, 0, 16);
 		$i=0;
