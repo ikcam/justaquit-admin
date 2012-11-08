@@ -35,6 +35,8 @@ require_once(BASEPATH.'pages/domain_migrate.php');
 // Projects
 require_once(BASEPATH.'pages/projects.php');
 require_once(BASEPATH.'pages/project_add.php');
+require_once(BASEPATH.'pages/project_edit.php');
+require_once(BASEPATH.'pages/project_delete.php');
 // Databases
 require_once(BASEPATH.'pages/databases.php');
 require_once(BASEPATH.'pages/database_add.php');
