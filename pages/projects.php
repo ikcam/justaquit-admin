@@ -10,7 +10,7 @@ function jadmin_page_projects(){
 		endif;
 ?>
 <div class="wrap">
-	<div id="icon-pages" class="icon32"><br></div>
+	<div id="icon-page" class="icon32"><br></div>
 	<h2>
 		Projects
 		<a href="?page=jadmin_projects&amp;action=add" class="add-new-h2">Add New</a>
