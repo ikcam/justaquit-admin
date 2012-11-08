@@ -2,7 +2,7 @@
 function jadmin_page_domain_add(){
 	global $settings;
 
-	if( $_POST['submit'] ) :
+	if( isset($_POST['submit']) && $_POST['submit'] ) :
 ?>
 <div id="message" class="updated">
 <?php
