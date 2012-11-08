@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_domain_edit(){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 
 	$ID = $_GET['ID'];
 	$domain =  get_domain( $ID );

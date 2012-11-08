@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_project_add(){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 
 	if( isset($_POST['submit']) && $_POST['submit'] ):
 		$name      = $_POST['name'];

@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_domain_add(){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 
 	if( isset($_POST['submit']) && $_POST['submit'] ) :
 ?>

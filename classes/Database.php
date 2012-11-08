@@ -17,7 +17,7 @@ class Database extends JAdmin {
 	}
 
 	private function setup_info(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 		$table = $wpdb->prefix.'databases';
 
 		$domain   = get_domain( $this->domain_id );

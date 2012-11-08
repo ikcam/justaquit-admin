@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_settings(){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 ?>
 <div class="wrap">
 	<div id="icon-options-general" class="icon32"><br></div><h2>Settings</h2>
@@ -14,12 +14,14 @@ function jadmin_page_settings(){
 				<th scope="row">Linode API Key</th>
 				<td>
 					<textarea name="jadmin_settings[linode_key]" cols="50"><?php echo $settings['linode_key'] ?></textarea>
+					<?php print_r($settings); ?>
 				</td>
 			</tr>
 			<tr valign="top">
 				<th scope="row">Main Domain</th>
 				<td>
 					<select name="jadmin_settings[linode_main]">
+						<option value="0">None</option>
 					<?php
 						$domains = get_linode_domains();
 						if( $domains ):

@@ -40,7 +40,7 @@ class Domain extends JAdmin {
 	}
 
 	private function create_linode_did(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		if( $this->linode_did == 0 ):
 			require_once('Services/Linode.php');
@@ -62,7 +62,7 @@ class Domain extends JAdmin {
 	}
 
 	private function destroy_linode_did( $did ){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		require_once('Services/Linode.php');
 		try {
@@ -78,7 +78,7 @@ class Domain extends JAdmin {
 	}
 
 	private function update_linode_did( $did ){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		require_once('Services/Linode.php');
 		try {
@@ -98,7 +98,7 @@ class Domain extends JAdmin {
 	}
 
 	private function create_linode_rid(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		if( $this->linode_did != 0 ):
 			$this->url = str_replace( '.', '', $this->url);
@@ -123,7 +123,7 @@ class Domain extends JAdmin {
 	}
 
 	private function destroy_linode_rid( $did, $rid ){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		require_once('Services/Linode.php');
 		try{
@@ -140,7 +140,7 @@ class Domain extends JAdmin {
 	}
 
 	private function create_folder(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		$dir = $settings['server_folder'].$this->url.'/';
 		$exec = 'mkdir '.$dir;
@@ -148,7 +148,7 @@ class Domain extends JAdmin {
 	}
 
 	private function detroy_folder(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 
 		$dir = $settings['server_folder'].$this->url;
 		$exec = 'rm -rf '.$dir;
@@ -167,7 +167,7 @@ class Domain extends JAdmin {
 	}
 
 	private function create_vhost(){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 		// Read file
 		$filename = BASEPATH.'virtualhost.txt';
 		$file     = fopen($filename, "r");
@@ -190,7 +190,7 @@ class Domain extends JAdmin {
 	}
 
 	private function destroy_vhost( $ID ){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 		
 		$domain = get_domain( $ID );
 
@@ -203,7 +203,7 @@ class Domain extends JAdmin {
 	}
 
 	private function create_wordpress( $db_id ){
-		global $settings;
+		$settings = get_option( 'jadmin_settings' );
 		$db = get_database( $db_id );
 
 		$dir  = $settings['server_folder'].$this->url.'/';

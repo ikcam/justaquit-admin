@@ -11,7 +11,6 @@ License: GPL2
 ?>
 <?php
 // Settings
-$settings = get_option( 'jadmin_settings' );
 define( 'BASEPATH', plugin_dir_path(__FILE__) );
 // Funcions
 require_once(BASEPATH.'jadmin_functions.php');
@@ -108,6 +107,20 @@ class JAdmin {
 		);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
+
+		// Default settings
+		$options = array(
+			'linode_key'      => '',
+			'linode_main'     => 0,
+			'server_ip'       => '0.0.0.0',
+			'server_folder'   => '/home/',
+			'server_root'     => 'root',
+			'server_apache'   => '/etc/apache2/sites-available/',
+			'server_apache2'  => '/etc/apache2/sites-enabled/',
+			'database_prefix' => 'client_'
+			);
+		add_option( 'jadmin_settings', $options );
+
 	}
 
 	public function settings_register(){
@@ -115,28 +128,25 @@ class JAdmin {
 	}
 
 	public function settings_callback( $input ){
-		if( $input['linode_key'] == NULL )
+		if( $input['linode_key'] == '' )
 			$input['linode_key'] = '';
 
-		if( $input['linode_main'] == NULL )
-			$input['linode_main'] = '';
-
-		if( $input['server_ip'] == NULL )
+		if( $input['server_ip'] == '' )
 			$input['server_ip'] = '0.0.0.0';
 
-		if( $input['server_folder'] == NULL )
+		if( $input['server_folder'] == '' )
 			$input['server_folder'] = '/home/';
 
-		if( $input['server_user'] == NULL )
+		if( $input['server_user'] == '' )
 			$input['server_user'] = 'root';
 
-		if( $input['server_apache'] == NULL )
+		if( $input['server_apache'] == '' )
 			$input['server_apache'] = '/etc/apache2/sites-available/';
 
-		if( $input['server_apache2'] == NULL )
+		if( $input['server_apache2'] == '' )
 			$input['server_apache2'] = '/etc/apache2/sites-enabled/';
 
-		if( $input['database_prefix'] == NULL )
+		if( $input['database_prefix'] == '' )
 			$input['database_prefix'] = 'client_';
 
 		return $input;

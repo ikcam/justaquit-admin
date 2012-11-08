@@ -66,7 +66,7 @@ function get_domains(){
 }
 
 function get_linode_domains(){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 
 	if( $settings['linode_key'] != '' ):
 		require_once('Services/Linode.php');
@@ -200,7 +200,7 @@ function get_domains_count( $ID ){
 * 	String: Domain name from Linode.
 */
 function get_linode_domain_name( $ID ){
-	global $settings;
+	$settings = get_option( 'jadmin_settings' );
 	
 	require_once('Services/Linode.php');
 	try {
