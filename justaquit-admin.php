@@ -19,6 +19,7 @@ require_once(BASEPATH.'jadmin_functions.php');
 require_once(BASEPATH.'classes/Client.php');
 require_once(BASEPATH.'classes/Database.php');
 require_once(BASEPATH.'classes/Domain.php');
+require_once(BASEPATH.'classes/Project.php');
 // Pages
 require_once(BASEPATH.'pages/main.php');
 // Clients
