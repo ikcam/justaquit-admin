@@ -51,8 +51,12 @@ function jadmin_page_projects(){
 				<td class="column-location"><?php echo $project->location ?></td>
 				<td class="column-domain">
 				<?php
-					$domain = get_domain( $project->domain_id );
-					echo $domain->url;
+					if($project->domain_id==0):
+						echo 'None';
+					else:
+						$domain = get_domain( $project->domain_id );
+						echo $domain->url;
+					endif;
 				?>
 				</td>
 			</tr>
