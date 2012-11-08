@@ -2,7 +2,7 @@
 function jadmin_page_domain_migrate(){
 	$ID = $_GET['ID'];
 
-	if( $_POST['submit'] ):
+	if( isset($_POST['submit']) && $_POST['submit'] ):
 		$url = $_POST['url'];
 		$linode_did = $_POST['linode_did'];
 		$domain = get_domain( $ID );
