@@ -1,12 +1,12 @@
 <?php
 function jadmin_page_tools(){
-	if( $_POST['update_plugin'] ):
+	if( isset($_POST['update_plugin']) && $_POST['update_plugin'] ):
 ?>
 <div id="message" class="updated">
 	<p><?php echo update_plugin() ?></p>
 </div>
 <?php
-	elseif( $_POST['restart_apache'] ):
+	elseif( isset($_POST['restart_apache']) && $_POST['restart_apache'] ):
 ?>
 <div id="message" class="updated">
 	<p><?php echo restart_apache() ?></p>
