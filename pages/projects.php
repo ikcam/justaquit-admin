@@ -1,71 +1,60 @@
 <?php
 function jadmin_page_projects(){
-	if( $_GET['action'] == 'add' ):
-		jadmin_page_client_add();
-	elseif( $_GET['action'] == 'edit' ):
-		jadmin_page_client_edit();
+	if( isset($_GET['action']) && $_GET['action'] == 'add' ):
+		jadmin_page_project_add();
+	elseif( isset($_GET['action']) && $_GET['action'] == 'edit' ):
+		jadmin_page_project_edit();
 	else:
-		if( $_GET['action'] == 'delete' ):
-			jadmin_page_client_delete();
+		if( isset($_GET['action']) && $_GET['action'] == 'delete' ):
+			jadmin_page_project_delete();
 		endif;
 ?>
 <div class="wrap">
-	<div id="icon-users" class="icon32"><br></div>
+	<div id="icon-pages" class="icon32"><br></div>
 	<h2>
-		Clients
-		<a href="?page=jadmin_clients&amp;action=add" class="add-new-h2">Add New</a>
+		Projects
+		<a href="?page=jadmin_projects&amp;action=add" class="add-new-h2">Add New</a>
 	</h2>
 
 	<table class="wp-list-table widefat fixed clients" cellspacing="0">
 		<thead>
 			<tr>
 				<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
-				<th scope="col" id="email" class="manage-column column-email"><span>Email</span></th>
-				<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
-				<th scope="col" id="author" class="manage-column column-author"><span>Author</span></th>
-				<th scope="col" id="editor" class="manage-column column-editor"><span>Last Edit</span></th>
-				<th scope="col" id="count" class="manage-column column-count"><span>Domain Count</span></th>
+				<th scope="col" id="url" class="manage-column column-url"><span>Source URL</span></th>
+				<th scope="col" id="location" class="manage-column column-location"><span>Server Location</span></th>
+				<th scope="col" id="domain" class="manage-column column-domain"><span>Linked Domain</span></th>
 			</tr>
 		</thead>
 		<tfoot>
 			<tr>
 				<th scope="col" id="name" class="manage-column column-name"><span>Name</span></th>
-				<th scope="col" id="email" class="manage-column column-email"><span>Email</span></th>
-				<th scope="col" id="phone" class="manage-column column-phone"><span>Phone</span></th>
-				<th scope="col" id="author" class="manage-column column-author"><span>Author</span></th>
-				<th scope="col" id="editor" class="manage-column column-editor"><span>Last Edit</span></th>
-				<th scope="col" id="count" class="manage-column column-count"><span>Domain Count</span></th>
+				<th scope="col" id="url" class="manage-column column-url"><span>Source URL</span></th>
+				<th scope="col" id="location" class="manage-column column-location"><span>Server Location</span></th>
+				<th scope="col" id="domain" class="manage-column column-domain"><span>Linked Domain</span></th>
 			</tr>
 		</tfoot>
 		<tbody id="the-list">
 		<?php
-			$clients = get_clients();
- 			if( is_array($clients) ):
-				foreach( $clients as $client ) :
+			$projects = get_projects();
+ 			if( is_array($projects) ):
+				foreach( $projects as $project ) :
 		?>
 			<tr id="client-<?php echo $client->ID ?>" valign="middle" class="alternate">
 				<td class="column-name">
-					<strong><?php echo $client->first_name.' '.$client->last_name ?></strong>
+					<strong><?php echo $project->name ?></strong>
 					<div class="row-actions">
-						<span class="edit"><a href="?page=jadmin_clients&amp;action=edit&amp;ID=<?php echo $client->ID ?>">Edit</a> |</span>
-						<span class="delete"><a class="submitdelete" href="?page=jadmin_clients&amp;action=delete&amp;ID=<?php echo $client->ID ?>" onclick="if ( confirm( 'You are about to delete client \'<?php echo $client->first_name.' '.$client->last_name ?>\'\n \'Cancel\' to return, \'Accept\' to erase.' ) ) { return true;}return false;">Delete</a></span>
+						<span class="edit"><a href="?page=jadmin_projects&amp;action=edit&amp;ID=<?php echo $project->ID ?>">Edit</a> |</span>
+						<span class="delete"><a class="submitdelete" href="?page=jadmin_projects&amp;action=delete&amp;ID=<?php echo $project->ID ?>" onclick="if ( confirm( 'You are about to delete the project \'<?php echo $project->name ?>\'\n \'Cancel\' to return, \'Accept\' to erase.' ) ) { return true;}return false;">Delete</a></span>
 					</div>
 				</td>
-				<td class="column-email"><?php echo $client->email ?></td>
-				<td class="column-phone"><?php echo $client->phone ?></td>
-				<td class="column-author">
+				<td class="column-url"><a href=""><?php echo $project->url ?></td>
+				<td class="column-location"><?php echo $project->location ?></td>
+				<td class="column-domain">
 				<?php
-					$user = get_userdata( $client->author );
-					echo $user->display_name;
+					$domain = get_domain( $project->domain_id );
+					echo $domain->url;
 				?>
 				</td>
-				<td class="column-editor">
-				<?php
-					$user = get_userdata( $client->editor );
-					echo $user->display_name;
-				?>
-				</td>
-				<td class="column-count"><?php echo get_domains_count( $client->ID ) ?></td>
 			</tr>
 		<?php
 				endforeach;
