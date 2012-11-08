@@ -1,6 +1,6 @@
 <?php
 function jadmin_page_database_add(){
-	if( $_POST['submit'] ):
+	if( isset($_POST['submit']) && $_POST['submit'] ):
 		$name = $_POST['name'];
 		$user = $_POST['user'];
 		$password= $_POST['password'];
