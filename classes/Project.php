@@ -56,7 +56,7 @@ Class Project{
 		endif;
 	}
 
-	public function delete_project($ID){
+	public static function delete_project($ID){
 		global $wpdb;
 		$table = $wpdb->prefix.'projects';
 
