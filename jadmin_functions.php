@@ -68,16 +68,17 @@ function get_domains(){
 function get_linode_domains(){
 	global $settings;
 
-	require_once('Services/Linode.php');
-	try {
-		$linode = new Services_Linode($settings['linode_key']);
-		$linode = $linode->domain_list();
-		$domains = $linode['DATA'];
-	} catch (Services_Linode_Exception $e) {
-		echo $e->getMessage();
-	}
-
-	return $domains;
+	if( $settings['linode_key'] != '' ):
+		require_once('Services/Linode.php');
+		try {
+			$linode = new Services_Linode($settings['linode_key']);
+			$linode = $linode->domain_list();
+			$domains = $linode['DATA'];
+		} catch (Services_Linode_Exception $e) {
+			echo $e->getMessage();
+		}
+		return $domains;
+	endif;
 }
 
 /*
