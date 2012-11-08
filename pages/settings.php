@@ -14,7 +14,6 @@ function jadmin_page_settings(){
 				<th scope="row">Linode API Key</th>
 				<td>
 					<textarea name="jadmin_settings[linode_key]" cols="50"><?php echo $settings['linode_key'] ?></textarea>
-					<?php print_r($settings); ?>
 				</td>
 			</tr>
 			<tr valign="top">
