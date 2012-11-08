@@ -1,5 +1,7 @@
 <?php
 function jadmin_page_project_add(){
+	global $settings;
+
 	if( isset($_POST['submit']) && $_POST['submit'] ):
 		$name      = $_POST['name'];
 		$url       = $_POST['url'];
@@ -19,6 +21,7 @@ function jadmin_page_project_add(){
 	<div id="icon-page" class="icon32"><br></div>
 	<h2>Add New Project</h2>
 	<form method="post" action="">
+		<input type="hidden" id="server_folder_base" value="<?php echo $settings['server_folder'] ?>" /> 
 		<table class="form-table">
 		<tbody>
 			<tr valign="top">
