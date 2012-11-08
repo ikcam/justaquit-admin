@@ -2,7 +2,7 @@
 function jadmin_page_client_edit(){
 	$ID = $_GET['ID'];
 
-	if( $_POST['submit'] ):
+	if( isset($_POST['submit']) && $_POST['submit'] ):
 		$first_name = $_POST['first_name'];
 		$last_name  = $_POST['last_name'];
 		$email      = $_POST['email'];
