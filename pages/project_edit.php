@@ -70,7 +70,7 @@ function jadmin_page_project_edit(){
 			</tr>
 		</tbody>
 		</table>
-		<p class="submit"><input type="submit" name="submit" value="Add New Client" class="button-primary" /></p>
+		<p class="submit"><input type="submit" name="submit" value="Update Project" class="button-primary" /></p>
 	</form>
 </div>
 <?php
