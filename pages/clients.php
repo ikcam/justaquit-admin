@@ -1,11 +1,11 @@
 <?php
 function jadmin_page_clients(){
-	if( $_GET['action'] == 'add' ):
+	if( isset($_GET['action']) && $_GET['action'] == 'add' ):
 		jadmin_page_client_add();
-	elseif( $_GET['action'] == 'edit' ):
+	elseif( isset($_GET['action']) && $_GET['action'] == 'edit' ):
 		jadmin_page_client_edit();
 	else:
-		if( $_GET['action'] == 'delete' ):
+		if( isset($_GET['action']) && $_GET['action'] == 'delete' ):
 			jadmin_page_client_delete();
 		endif;
 ?>
