@@ -121,6 +121,27 @@ function get_database_by_domain( $ID ){
 	return $database;
 }
 
+function get_projects(){
+	global $wpdb;
+	$table = $wpdb->prefix.'projects';
+
+	$query = "SELECT * FROM $table ORDER BY ID DESC";
+
+	$projects = $wpdb->get_results( $wpdb->prepare($query) );
+
+	return $projects;
+}
+
+function get_project($ID){
+	global $wpdb;
+	$table  = $wpdb->prefix.'projects';
+
+	$query  = "SELECT * FROM $table WHERE ID = %d;";
+	$project = $wpdb->get_row( $wpdb->prepare($query, $ID) );
+
+	return $project;
+}
+
 /*
 * Name:
 * 	has_domains( $ID )
