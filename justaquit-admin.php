@@ -32,6 +32,9 @@ require_once(BASEPATH.'pages/domain_add.php');
 require_once(BASEPATH.'pages/domain_edit.php');
 require_once(BASEPATH.'pages/domain_delete.php');
 require_once(BASEPATH.'pages/domain_migrate.php');
+// Projects
+require_once(BASEPATH.'pages/projects.php');
+require_once(BASEPATH.'pages/project_add.php');
 // Databases
 require_once(BASEPATH.'pages/databases.php');
 require_once(BASEPATH.'pages/database_add.php');
@@ -90,6 +93,18 @@ class JAdmin {
 		);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
+
+		$table = $wpdb->prefix."projects";
+		$sql = "CREATE TABLE $table(
+			ID mediumint(9) NOT NULL AUTO_INCREMENT,
+			name varchar(30) NOT NULL,
+			url varchar(55) NOT NULL,
+			location varchar(250) NOT NULL,
+			domain_id mediumint(9) NOT NULL,
+			UNIQUE KEY ID (ID)
+		);";
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
 	}
 
 	public function settings_register(){
@@ -128,6 +143,7 @@ class JAdmin {
 		add_menu_page( 'JustAquit Admin', 'JustAquit Admin', 'administrator', 'jadmin', 'jadmin_page_main', '' );
 		add_submenu_page( 'jadmin', 'Clients', 'Clients', 'administrator', 'jadmin_clients', 'jadmin_page_clients' );
 		add_submenu_page( 'jadmin', 'Domains', 'Domains', 'administrator', 'jadmin_domains', 'jadmin_page_domains' );
+		add_submenu_page( 'jadmin', 'Projects', 'Projects', 'administrator', 'jadmin_projects', 'jadmin_page_projects' );
 		add_submenu_page( 'jadmin', 'Databases', 'Databases', 'administrator', 'jadmin_databases', 'jadmin_page_databases' );
 		add_submenu_page( 'jadmin', 'Settings', 'Settings', 'administrator', 'jadmin_settings', 'jadmin_page_settings' );
 		add_submenu_page( 'jadmin', 'Tools', 'Tools', 'administrator', 'jadmin_tools', 'jadmin_page_tools' );
