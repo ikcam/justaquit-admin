@@ -48,6 +48,7 @@ function jadmin_page_domain_add(){
 						endforeach;
 					?>
 					</select>
+					<span class"description">or <a href="?page=jadmin_clients&amp;action=add" target="_blank">Add Client</a></span>
 				</td>
 			</tr>
 			<tr valign="top">
