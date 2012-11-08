@@ -1,13 +1,13 @@
 <?php
 function jadmin_page_domains(){
-	if( $_GET['action'] == 'add' ):
+	if( isset($_GET['action']) && $_GET['action'] == 'add' ):
 		jadmin_page_domain_add();
-	elseif( $_GET['action'] == 'edit' ):
+	elseif( isset($_GET['action']) && $_GET['action'] == 'edit' ):
 		jadmin_page_domain_edit();
-	elseif( $_GET['action'] == 'migrate' ):
+	elseif( isset($_GET['action']) && $_GET['action'] == 'migrate' ):
 		jadmin_page_domain_migrate();
 	else:
-		if( $_GET['action'] == 'delete' ):
+		if( isset($_GET['action']) && $_GET['action'] == 'delete' ):
 			jadmin_page_domain_delete();
 		endif;
 ?>
