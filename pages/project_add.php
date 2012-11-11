@@ -58,6 +58,7 @@ function jadmin_page_project_add(){
 				<th scope="row"><label for="url">Source URL:</label></th>
 				<td>
 					<input type="text" name="url" id="url" placeholder="Source URL" />
+					<span class="description">From <a href="//github.com/" target="_blank">GitHub</a> or <a href="//bitbucket.org/" target="_blank">BitBucket</a></span>
 				</td>
 			</tr>
 			<tr valign="top">
