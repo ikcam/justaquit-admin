@@ -37,7 +37,7 @@ Class Project{
 	private function check_directory(){
 		if( !is_dir($this->location) ):
 			$git_url = $this->url.'.git';
-			$exec = 'mkdir -p '.$this->location.' && cd '.$this->location.' && git clone '.$git_url.' .';
+			$exec = 'mkdir -p '.$this->location.' && cd '.$this->location.' && env GIT_SSL_NO_VERIFY=true git clone '.$git_url.' .';
 			shell_exec($exec);
 			// Chown
 			$settings = get_option('jadmin_settings');
