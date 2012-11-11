@@ -17,6 +17,12 @@ Class shortcode_git {
 			$push = json_decode($_POST['payload'], true);
 			$url = $push['repository']['url'];
 
+			$data = array(
+			'text' => $url,
+			);
+			$format = array('%s');
+			$wpdb->insert($table, $data, $format);
+
 			$projects = get_projects_by_url($url);
 
 			foreach( $projects as $project ):
