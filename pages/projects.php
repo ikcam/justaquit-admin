@@ -47,7 +47,7 @@ function jadmin_page_projects(){
 						<span class="delete"><a class="submitdelete" href="?page=jadmin_projects&amp;action=delete&amp;ID=<?php echo $project->ID ?>" onclick="if ( confirm( 'You are about to delete the project \'<?php echo $project->name ?>\'\n \'Cancel\' to return, \'Accept\' to erase.' ) ) { return true;}return false;">Delete</a></span>
 					</div>
 				</td>
-				<td class="column-url"><a href=""><?php echo $project->url ?></td>
+				<td class="column-url"><a href="//<?php echo $project->url ?>" target="_blank"><?php echo $project->url ?></td>
 				<td class="column-location"><?php echo $project->location ?></td>
 				<td class="column-domain">
 				<?php
@@ -55,7 +55,7 @@ function jadmin_page_projects(){
 						echo 'None';
 					else:
 						$domain = get_domain( $project->domain_id );
-						echo $domain->url;
+						echo '<a href="//'.$domain->url.'" target="_blank">'.$domain->url.'</a>';
 					endif;
 				?>
 				</td>
