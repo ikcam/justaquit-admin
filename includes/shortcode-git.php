@@ -15,6 +15,14 @@ Class shortcode_git {
 				$owner        = $push['repository']['owner'];
 				$url          = 'https://'.$owner.'@bitbucket.org'.$absolute_url;
 			}
+
+			global $wpdb;
+			$table = $wpdb->prefix.'log';
+			$data = array(
+				'text' => $url
+				);
+			$format = array('%s');
+			$wpdb->insert($table,$data,$format);
 			
 			if( $url != '' ){
 				$projects = get_projects_by_url($url);
