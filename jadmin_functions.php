@@ -228,11 +228,17 @@ function get_linode_domain_name( $ID ){
 	return $name;
 }
 
+function update_project($ID){
+	$project = get_project($ID);
+
+	$exec = 'cd '.$project->location.' && git pull';
+	return shell_exec($exec);
+}
+
 function update_plugin(){
 	$exec = 'cd '.BASEPATH.'&& git pull';
 	return shell_exec( $exec );
 }
-
 
 /*
 * Name:
