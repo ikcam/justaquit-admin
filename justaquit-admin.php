@@ -136,20 +136,43 @@ class JAdmin {
 
 		if( $input['server_folder'] == '' )
 			$input['server_folder'] = '/home/';
+		else {
+			$last = substr($input['server_folder'], -1);
+
+			if( $last != '/' )
+				$input['server_folder'] = $input['server_folder'].'/';
+		}
 
 		if( $input['server_user'] == '' )
 			$input['server_user'] = 'root';
 
 		if( $input['server_apache'] == '' )
 			$input['server_apache'] = '/etc/apache2/sites-available/';
+		else {
+			$last = substr($input['server_apache'], -1);
+			
+			if( $last != '/' )
+				$input['server_apache'] = $input['server_apache'].'/';
+		}
 
 		if( $input['server_apache2'] == '' )
 			$input['server_apache2'] = '/etc/apache2/sites-enabled/';
+		else {
+			$last = substr($input['server_apache2'], -1);
+			
+			if( $last != '/' )
+				$input['server_apache2'] = $input['server_apache2'].'/';
+		}
 
 		if( $input['database_prefix'] == '' )
 			$input['database_prefix'] = 'client_';
 
 		return $input;
+	}
+
+	public function scripts(){
+		if( isset($_GET['page']) && $_GET['page'] == 'jadmin_projects' && isset($_GET['action']) && $_GET['action'] == 'add' )
+			wp_enqueue_script( 'jadmin-project',	plugins_url('/pages/javascript/project.jquery.js', __FILE__), array('jquery'));
 	}
 
 	public function init(){
@@ -165,5 +188,7 @@ class JAdmin {
 
 add_action('admin_menu', array('JAdmin', 'init') );
 add_action('admin_init', array('JAdmin', 'settings_register') );
+add_action('admin_enqueue_scripts', array('jAdmin', 'scripts') );
+
 register_activation_hook( __FILE__, array('JAdmin', 'install') );
 ?>
