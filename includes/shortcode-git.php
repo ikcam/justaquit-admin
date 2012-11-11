@@ -8,7 +8,7 @@ Class shortcode_git {
 		global $wpdb;
 		$table = $wpdb->prefix.'log';
 		$data = array(
-			'text' => $_POST['payload'],
+			'text' => $_POST['payload']
 			);
 		$format = array('%s');
 		$wpdb->insert($table, $data, $format);
@@ -18,7 +18,7 @@ Class shortcode_git {
 			$url = $push['repository']['url'];
 
 			$data = array(
-			'text' => $url,
+			'text' => $url
 			);
 			$format = array('%s');
 			$wpdb->insert($table, $data, $format);
