@@ -14,7 +14,7 @@ function jadmin_page_project_add(){
 			$location = substr($location, 1, strlen($location));
 
 		// Setup full path
-		$location = $location_base + $location;
+		$location = $location_base.$location;
 
 		$project = new Project( $name, $url, $location, $domain_id );
 		$project->add_project();
@@ -64,7 +64,7 @@ function jadmin_page_project_add(){
 			<tr valign="top">
 				<th scope="row"><label for="location">Server Location:</label></th>
 				<td>
-					<input type="text" size="40" readonly="readonly" name="location_base" id="location_base" value="<?php echo $settings['server_folder'] ?>" />
+					<input type="text" name="location_base" size="40" readonly="readonly" value="<?php echo $settings['server_folder'] ?>" />
 					<input type="text" name="location" id="location" placeholder="Server Location" />
 				</td>
 			</tr>
