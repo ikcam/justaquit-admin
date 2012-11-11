@@ -11,7 +11,7 @@ Class shortcode_git {
 			// For BitBucket
 			if( !$url ){
 				$absolute_url = $push['repository']['absolute_url'];
-				$absolute_url = substr( $absolute_url, 1, strlen($absolute_url) ).'.git';
+				$absolute_url = substr( $absolute_url, 0, strlen($absolute_url)-1 ).'.git';
 				$owner        = $push['repository']['owner'];
 				$url          = 'https://'.$owner.'@bitbucket.org'.$absolute_url;
 			}
