@@ -26,6 +26,9 @@ require_once(BASEPATH.'pages/clients.php');
 require_once(BASEPATH.'pages/client_add.php');
 require_once(BASEPATH.'pages/client_edit.php');
 require_once(BASEPATH.'pages/client_delete.php');
+// Shortcodes
+require_once(BASEPATH.'includes/shortcode-git.php');
+new shortcode_git;
 // Domains
 require_once(BASEPATH.'pages/domains.php');
 require_once(BASEPATH.'pages/domain_add.php');
@@ -110,7 +113,7 @@ class JAdmin {
 
 		// Default settings
 		$options = get_option('jadmin_settings');
-		if( !is_array($option) )
+		if( !is_array($option) ):
 			$options = array(
 				'linode_key'      => '',
 				'linode_main'     => 0,
@@ -128,11 +131,11 @@ class JAdmin {
 				'post_content' => '[jadmin_git]',
 				'post_status'  => 'publish',
 				'post_name'    => 'git-post-receive',
-				'post_type'    => 'page'
+				'post_type'    => 'page',
 				'post_author'  =>  1
 			);
 			wp_insert_post( $page_array );
-		}
+		endif;
 	}
 
 	public function settings_register(){
@@ -183,7 +186,7 @@ class JAdmin {
 	}
 
 	public function scripts(){
-		if( isset($_GET['page']) && $_GET['page'] == 'jadmin_projects' && isset($_GET['action']) && $_GET['action'] == 'add' )
+		if( isset($_GET['page']) && $_GET['page'] == 'jadmin_projects' )
 			wp_enqueue_script( 'jadmin-project',	plugins_url('/pages/javascript/project.jquery.js', __FILE__), array('jquery'));
 	}
 
