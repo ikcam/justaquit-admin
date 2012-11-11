@@ -8,6 +8,8 @@ Class shortcode_git {
 		if( isset($_POST['payload']) ):
 			$push = json_decode(stripslashes($_POST['payload']), true);
 			$url = $push['repository']['url'];
+			if( $url = '' )
+				$url = $push['repository']['website'];
 
 			$projects = get_projects_by_url($url);
 
