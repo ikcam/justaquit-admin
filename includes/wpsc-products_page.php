@@ -18,11 +18,7 @@ $image_width = get_option('product_image_width');
 
 			<div class="default_product_display product_view_<?php echo wpsc_the_product_id(); ?> <?php echo wpsc_category_class(); ?> group">
 				<h4 class="prodtitle entry-title">
-					<?php if(get_option('hide_name_link') == 1) : ?>
-						<?php echo wpsc_the_product_title(); ?>
-					<?php else: ?>
 					<a class="wpsc_product_title" href="<?php echo esc_url( wpsc_the_product_permalink() ); ?>"><?php echo wpsc_the_product_title(); ?></a>
-					<?php endif; ?>
 				</h4>
 				<?php if(wpsc_show_thumbnails()) :?>
 					<div class="imagecol" style="width:<?php echo $image_width; ?>;" id="imagecol_<?php echo wpsc_the_product_id(); ?>">
