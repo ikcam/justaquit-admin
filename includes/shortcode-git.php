@@ -24,11 +24,7 @@ Class shortcode_git {
 
 				if( $projects ):
 					foreach( $projects as $project ):
-						$data = array(
-							'text' => update_git($project->ID)
-							);
-						$format = array('%s');
-						$wpdb->insert($table,$data,$format);
+						update_git($project->ID);
 					endforeach;
 				endif;
 			}
