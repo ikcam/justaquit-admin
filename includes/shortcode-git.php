@@ -7,12 +7,13 @@ Class shortcode_git {
 	public function shortcode(){
 		if( isset($_POST['payload']) ):
 			$push = json_decode(stripslashes($_POST['payload']), true);
-			$url = $push['repository']['url'];
+			$url  = $push['repository']['url'];
+			// For BitBucket
 			if( $url = '' ){
 				$absolute_url = $push['repository']['absolute_url'];
-				$absolute_url = substr( $absolute_url, 1, strlen($absolute_url) );
-				$website = $push['repository']['website'];
-				$url = $website.$absolute_url;
+				$absolute_url = substr( $absolute_url, 1, strlen($absolute_url) ).'.git';
+				$owner        = $push['repository']['owner'];
+				$url          = 'https://'.$owner.'@bitbucket.org'.$absolute_url;
 			}
 			
 			if( $url != '' ){
