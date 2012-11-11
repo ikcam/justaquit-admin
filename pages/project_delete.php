@@ -11,7 +11,7 @@ function jadmin_page_project_delete(){
 		</div>
 <?php
 	else:
-		Client::delete_project($ID);
+		Project::delete_project($ID);
 ?>
 		<div id="message" class="updated">
 			<p>The project has been deleted succesfuly.</p>
