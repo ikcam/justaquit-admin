@@ -7,18 +7,13 @@ Class shortcode_git {
 	public function shortcode(){
 		global $wpdb;
 		$table = $wpdb->prefix.'log';
-		$data = array(
-			'text' => $_POST['payload']
-			);
-		$format = array('%s');
-		$wpdb->insert($table, $data, $format);
 
 		if( isset($_POST['payload']) ):
 			$push = json_decode($_POST['payload'], true);
-			$url = $push['repository']['url'];
+			$url = var_dump($push);
 
 			$data = array(
-				'text' => $push['repository']['url']
+				'text' => $url
 				);
 			$format = array('%s');
 			$wpdb->insert($table, $data, $format);
