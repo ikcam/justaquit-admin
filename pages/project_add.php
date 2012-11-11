@@ -13,6 +13,9 @@ function jadmin_page_project_add(){
 		if( substr($location, 0, 1) == '/' )
 			$location = substr($location, 1, strlen($location));
 
+		if( substr($url, -1) == '/' )
+			$url = substr($url, 0, strlen($url)-1);
+
 		// Setup full path
 		$location = $location_base.$location;
 

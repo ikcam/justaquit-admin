@@ -1,6 +1,5 @@
 <?php
 Class Project{
-	private $ID;
 	private $name;
 	private $url;
 	private $location;
@@ -8,8 +7,6 @@ Class Project{
 
 	public function __construct($name, $url, $location, $domain_id){
 		$this->name      = $name;
-		if( substr($url, -1) == '/' )
-			$url = substr($url, 0, strlen($url)-1);
 		$this->url     = $url;
 		$this->location  = $location;
 		$this->domain_id = $domain_id;
@@ -32,8 +29,6 @@ Class Project{
 				);
 			$format = array('%s', '%s', '%s', '%d');
 			$wpdb->insert($table, $data, $format);
-
-			$this->ID = $wpdb->insert_id;
 
 			return TRUE;
 		endif;
