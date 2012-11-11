@@ -9,7 +9,7 @@ Class shortcode_git {
 			$push = json_decode(stripslashes($_POST['payload']), true);
 			$url  = $push['repository']['url'];
 			// For BitBucket
-			if( $url = '' ){
+			if( !$url ){
 				$absolute_url = $push['repository']['absolute_url'];
 				$absolute_url = substr( $absolute_url, 1, strlen($absolute_url) ).'.git';
 				$owner        = $push['repository']['owner'];
