@@ -1,5 +1,6 @@
 <?php
 function jadmin_page_project_edit(){
+	$settings = get_option( 'jadmin_settings' );
 	$ID = $_GET['ID'];
 
 	if( isset($_POST['submit']) && $_POST['submit'] ):
@@ -32,8 +33,25 @@ function jadmin_page_project_edit(){
 	<div id="icon-page" class="icon32"><br></div>
 	<h2>Edit Project</h2>
 	<form method="post" action="">
+		<input type="hidden" id="server_folder_base" value="<?php echo $settings['server_folder'] ?>" /> 
 		<table class="form-table">
 		<tbody>
+			<tr valign="top">
+				<th scope="row"><label for="domain_id">Linked Domain:</label></th>
+				<td>
+					<select name="domain_id" id="domain_id">
+						<option value="0" <?php if($project->domain_id == 0){echo 'selected';} ?>>None</option>
+					<?php 
+						$domains = get_domains();
+						foreach($domains as $domain):
+					?>
+						<option value="<?php echo $domain->ID ?>" <?php if($project->domain_id == $domain->ID){echo 'selected';} ?>><?php echo $domain->url ?></option>
+					<?php
+						endforeach;
+					?>
+					</select>
+				</td>
+			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="name">Name:</label></th>
 				<td>
@@ -50,22 +68,6 @@ function jadmin_page_project_edit(){
 				<th scope="row"><label for="location">Server Location:</label></th>
 				<td>
 					<input type="text" name="location" id="location" placeholder="Server Location" value="<?php echo $project->location ?>" />
-				</td>
-			</tr>
-			<tr valign="top">
-				<th scope="row"><label for="domain_id">Linked Domain:</label></th>
-				<td>
-					<select name="domain_id" id="domain_id">
-						<option value="0" <?php if($project->domain_id == 0){echo 'selected';} ?>>None</option>
-					<?php 
-						$domains = get_domains();
-						foreach($domains as $domain):
-					?>
-						<option value="<?php echo $domain->ID ?>" <?php if($project->domain_id == $domain->ID){echo 'selected';} ?>><?php echo $domain->url ?></option>
-					<?php
-						endforeach;
-					?>
-					</select>
 				</td>
 			</tr>
 		</tbody>
