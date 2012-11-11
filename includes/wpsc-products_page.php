@@ -11,6 +11,8 @@ $image_width = get_option('product_image_width');
 <?php // */ ?>
 
 	<?php if(wpsc_display_products()): ?>
+		<div class="one_sixth"></div>
+		<div class="two_third">
 		<?php /** start the product loop here */?>
 		<?php while (wpsc_have_products()) :  wpsc_the_product(); ?>
 
@@ -171,6 +173,8 @@ $image_width = get_option('product_image_width');
 
 		<?php endwhile; ?>
 		<?php /** end the product loop here */?>
+		</div>
+		<div class="one_sixth last"></div>
 		<?php if(wpsc_product_count() == 0):?>
 			<h3><?php  _e('There are no products in this group.', 'wpsc'); ?></h3>
 		<?php endif ; ?>
