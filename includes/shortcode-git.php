@@ -8,7 +8,7 @@ Class shortcode_git {
 		global $wpdb;
 		$table = $wpdb->prefix.'log';
 		$data = array(
-			'text' => $_POST['payload'];
+			'text' => $_POST['payload'],
 			);
 		$format = array('%s');
 		$wpdb->insert($table, $data, $format);
