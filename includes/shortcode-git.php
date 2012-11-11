@@ -15,9 +15,10 @@ Class shortcode_git {
 
 		if( isset($_POST['payload']) ):
 			$push = json_decode($_POST['payload'], true);
+			$url = $push['repository']['url'];
 
 			$data = array(
-				'text' => $push
+				'text' => $push['repository']['url']
 				);
 			$format = array('%s');
 			$wpdb->insert($table, $data, $format);
