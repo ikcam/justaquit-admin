@@ -5,26 +5,23 @@ $image_width = get_option('product_image_width');
  * Most functions called in this page can be found in the wpsc_query.php file
  */
 ?>
-<div id="default_products_page_container" class="wrap wpsc_container">
-
 <?php wpsc_output_breadcrumbs(); ?>
 
 	<?php do_action('wpsc_top_of_products_page'); // Plugin hook for adding things to the top of the products page, like the live search ?>
 <?php // */ ?>
 
 	<?php if(wpsc_display_products()): ?>
-		<div class="wpsc_default_product_list">
 		<?php /** start the product loop here */?>
 		<?php while (wpsc_have_products()) :  wpsc_the_product(); ?>
 
 			<div class="default_product_display product_view_<?php echo wpsc_the_product_id(); ?> <?php echo wpsc_category_class(); ?> group">
-				<h2 class="prodtitle entry-title">
-							<?php if(get_option('hide_name_link') == 1) : ?>
-								<?php echo wpsc_the_product_title(); ?>
-							<?php else: ?>
-							<a class="wpsc_product_title" href="<?php echo esc_url( wpsc_the_product_permalink() ); ?>"><?php echo wpsc_the_product_title(); ?></a>
-							<?php endif; ?>
-						</h2>
+				<h4 class="prodtitle entry-title">
+					<?php if(get_option('hide_name_link') == 1) : ?>
+						<?php echo wpsc_the_product_title(); ?>
+					<?php else: ?>
+					<a class="wpsc_product_title" href="<?php echo esc_url( wpsc_the_product_permalink() ); ?>"><?php echo wpsc_the_product_title(); ?></a>
+					<?php endif; ?>
+				</h4>
 				<?php if(wpsc_show_thumbnails()) :?>
 					<div class="imagecol" style="width:<?php echo $image_width; ?>;" id="imagecol_<?php echo wpsc_the_product_id(); ?>">
 						<?php if(wpsc_the_product_thumbnail()) :
@@ -174,7 +171,6 @@ $image_width = get_option('product_image_width');
 
 		<?php endwhile; ?>
 		<?php /** end the product loop here */?>
-		</div>
 		<?php if(wpsc_product_count() == 0):?>
 			<h3><?php  _e('There are no products in this group.', 'wpsc'); ?></h3>
 		<?php endif ; ?>
@@ -186,4 +182,3 @@ $image_width = get_option('product_image_width');
 			</div><!--close wpsc_page_numbers_bottom-->
 		<?php endif; ?>
 	<?php endif; ?>
-</div><!--close default_products_page_container-->
