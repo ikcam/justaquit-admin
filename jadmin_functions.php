@@ -143,6 +143,16 @@ function get_project($ID){
 	return $project;
 }
 
+function get_projects_by_url($url){
+	global $wpdb;
+	$table = $wpdb->prefix.'projects';
+
+	$query = "SELECT * FROM $table WHERE url = %s;";
+	$projects = $wpdb->get_results( $wpdb->prepare($query, $url) );
+
+	return $projects;
+}
+
 /*
 * Name:
 * 	has_domains( $ID )
