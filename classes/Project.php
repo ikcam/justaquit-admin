@@ -8,7 +8,9 @@ Class Project{
 
 	public function __construct($name, $url, $location, $domain_id){
 		$this->name      = $name;
-		$this->url       = $url;
+		if( substr($url, -1) == '/' )
+			$url = substr($url, 0, strlen($url)-1);
+		$this->url     = $url;
 		$this->location  = $location;
 		$this->domain_id = $domain_id;
 	}
@@ -20,6 +22,8 @@ Class Project{
 		if( $this->exists() ):
 			return FALSE;
 		else:
+			$this->check_directory();
+
 			$data = array(
 					'name'      => $this->name,
 					'url'       => $this->url,
@@ -35,25 +39,29 @@ Class Project{
 		endif;
 	}
 
+	private function check_directory(){
+		if( !is_dir($this->location) ):
+			$git_url = $this->url.'.git';
+			$exec = 'mkdir -p '.$this->location.' && cd '.$this->location.' && git clone '.$git_url.' .';
+			shell_exec($exec);
+		endif;
+	}
+
 	public function update_project($ID){
 		global $wpdb;
 		$table = $wpdb->prefix.'projects';
 
-		if( $this->exists() ):
-			return FALSE;
-		else:
-			$data = array(
-					'name'      => $this->name,
-					'url'       => $this->url,
-					'location'  => $this->location,
-					'domain_id' => $this->domain_id
-				);
-			$where = array('ID' => $ID);
-			$format = array('%s', '%s', '%s', '%d');
+		$data = array(
+				'name'      => $this->name,
+				'url'       => $this->url,
+				'location'  => $this->location,
+				'domain_id' => $this->domain_id
+			);
+		$where = array('ID' => $ID);
+		$format = array('%s', '%s', '%s', '%d');
 
-			$wpdb->update($table, $data, $where, $format);
-			return TRUE;
-		endif;
+		$wpdb->update($table, $data, $where, $format);
+		return TRUE;
 	}
 
 	public static function delete_project($ID){
@@ -63,7 +71,6 @@ Class Project{
 		if( Project::exists($ID) ):
 			$query = "DELETE FROM $table WHERE ID = %d;";
 			$wpdb->query( $wpdb->prepare($query, $ID) );
-
 			return TRUE;
 		else:
 			return FALSE;
