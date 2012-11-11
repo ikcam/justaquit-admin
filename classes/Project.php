@@ -39,6 +39,10 @@ Class Project{
 			$git_url = $this->url.'.git';
 			$exec = 'mkdir -p '.$this->location.' && cd '.$this->location.' && git clone '.$git_url.' .';
 			shell_exec($exec);
+			// Chown
+			$settings = get_option('jadmin_settings');
+			$exec = 'chown -hR '.$settings['server_root'].':'.$settings['server_root'].' '.$this->location;
+			shell_exec($exec);
 		endif;
 	}
 
