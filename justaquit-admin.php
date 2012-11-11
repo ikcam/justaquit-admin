@@ -109,18 +109,30 @@ class JAdmin {
 		dbDelta($sql);
 
 		// Default settings
-		$options = array(
-			'linode_key'      => '',
-			'linode_main'     => 0,
-			'server_ip'       => '0.0.0.0',
-			'server_folder'   => '/home/',
-			'server_root'     => 'root',
-			'server_apache'   => '/etc/apache2/sites-available/',
-			'server_apache2'  => '/etc/apache2/sites-enabled/',
-			'database_prefix' => 'client_'
-			);
-		add_option( 'jadmin_settings', $options );
+		$options = get_option('jadmin_settings');
+		if( !is_array($option) )
+			$options = array(
+				'linode_key'      => '',
+				'linode_main'     => 0,
+				'server_ip'       => '0.0.0.0',
+				'server_folder'   => '/home/',
+				'server_root'     => 'root',
+				'server_apache'   => '/etc/apache2/sites-available/',
+				'server_apache2'  => '/etc/apache2/sites-enabled/',
+				'database_prefix' => 'client_'
+				);
+			add_option( 'jadmin_settings', $options );
 
+			$page_array = array(
+				'post_title'   => 'Git Post Reception Page',
+				'post_content' => '[jadmin_git]',
+				'post_status'  => 'publish',
+				'post_name'    => 'git-post-receive',
+				'post_type'    => 'page'
+				'post_author'  =>  1
+			);
+			wp_insert_post( $page_array );
+		}
 	}
 
 	public function settings_register(){
