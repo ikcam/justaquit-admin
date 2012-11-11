@@ -4,7 +4,7 @@ function jadmin_page_project_delete(){
 
 	$project = get_project( $ID );
 
-	if( is_object($project) ) :
+	if( !is_object($project) ) :
 ?>
 		<div id="message" class="error">
 			<p>The project that you are looking for doesn't exists</p>
