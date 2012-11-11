@@ -15,7 +15,7 @@ Class shortcode_git {
 
 		if( isset($_POST['payload']) ):
 			$push = json_decode($_POST['payload'], true);
-			$url = $push['repository']['url'];
+			$url = $push['repository'];
 
 			$data = array(
 			'text' => $url
