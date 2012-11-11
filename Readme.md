@@ -9,6 +9,7 @@ This plugins allows you to create accounts into you Linode Server saving you the
 * Create Virtual Host on Apache.
 * Activate the VirtualHost.
 * Reload and Restart Apache.
+* GitHub and BitBucket integration
 
 As you can see this plugin is the perfect tool to manage your Linode Server, saving you a lot of time.
 

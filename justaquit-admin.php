@@ -3,7 +3,7 @@
 Plugin Name: JustAquit Admin
 Plugin URI: http://justaquit.net
 Description: Controls JustAquit Clients
-Version: v1.0
+Version: v1.5
 Author: Irving Kcam
 Author URI: http://ikcam.com
 License: GPL2
@@ -103,7 +103,7 @@ class JAdmin {
 		$sql = "CREATE TABLE $table(
 			ID mediumint(9) NOT NULL AUTO_INCREMENT,
 			name varchar(30) NOT NULL,
-			url varchar(55) NOT NULL,
+			url varchar(200) NOT NULL,
 			location varchar(250) NOT NULL,
 			domain_id mediumint(9) NOT NULL,
 			UNIQUE KEY ID (ID)
