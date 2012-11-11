@@ -138,9 +138,8 @@ function get_project($ID){
 	$table  = $wpdb->prefix.'projects';
 
 	$query  = "SELECT * FROM $table WHERE ID = %d;";
-	$project = $wpdb->get_row( $wpdb->prepare($query, $ID) );
 
-	return $project;
+	return $wpdb->get_row( $wpdb->prepare($query, $ID) );
 }
 
 function get_projects_by_url($url){
@@ -148,9 +147,8 @@ function get_projects_by_url($url){
 	$table = $wpdb->prefix.'projects';
 
 	$query = "SELECT * FROM $table WHERE url = %s;";
-	$projects = $wpdb->get_results( $wpdb->prepare($query, $url) );
-
-	return $projects;
+	
+	return $wpdb->get_results( $wpdb->prepare($query, $url) );
 }
 
 /*
@@ -231,7 +229,7 @@ function get_linode_domain_name( $ID ){
 function update_git($ID){
 	$project = get_project($ID);
 
-	$exec = 'cd '.$project->location.' && git pull';
+	$exec = 'cd '.$project->location.' && env GIT_SSL_NO_VERIFY=true git pull';
 	return shell_exec($exec);
 }
 

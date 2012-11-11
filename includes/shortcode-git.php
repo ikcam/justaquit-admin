@@ -11,9 +11,11 @@ Class shortcode_git {
 
 			$projects = get_projects_by_url($url);
 
-			foreach( $projects as $project ):
-				update_git($project->ID);
-			endforeach;
+			if( $projects )
+				foreach( $projects as $project ):
+					update_git($project->ID);
+				endforeach;
+			endif;
 		endif;
 	}
 }
