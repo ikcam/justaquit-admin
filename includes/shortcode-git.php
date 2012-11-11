@@ -9,8 +9,8 @@ Class shortcode_git {
 		$table = $wpdb->prefix.'log';
 
 		if( isset($_POST['payload']) ):
-			$push = json_decode($_POST['payload'], true);
-			$url = var_dump($push);
+			$push = json_decode(stripslashes($_POST['payload']), true);
+			$url = $push['repository']['url'];
 
 			$data = array(
 				'text' => $url
