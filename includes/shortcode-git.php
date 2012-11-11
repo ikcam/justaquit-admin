@@ -5,23 +5,14 @@ Class shortcode_git {
 	}
 
 	public function shortcode(){
-		global $wpdb;
-		$table = $wpdb->prefix.'log';
-
 		if( isset($_POST['payload']) ):
 			$push = json_decode(stripslashes($_POST['payload']), true);
 			$url = $push['repository']['url'];
 
-			$data = array(
-				'text' => $url
-				);
-			$format = array('%s');
-			$wpdb->insert($table, $data, $format);
-
 			$projects = get_projects_by_url($url);
 
 			foreach( $projects as $project ):
-				update_project($project->ID);
+				update_git($project->ID);
 			endforeach;
 		endif;
 	}

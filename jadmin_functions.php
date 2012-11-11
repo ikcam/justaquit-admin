@@ -228,7 +228,7 @@ function get_linode_domain_name( $ID ){
 	return $name;
 }
 
-function update_project($ID){
+function update_git($ID){
 	$project = get_project($ID);
 
 	$exec = 'cd '.$project->location.' && git pull';
