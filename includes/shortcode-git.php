@@ -18,18 +18,17 @@ Class shortcode_git {
 
 			global $wpdb;
 			$table = $wpdb->prefix.'log';
-			$data = array(
-				'text' => $url
-				);
-			$format = array('%s');
-			$wpdb->insert($table,$data,$format);
 			
 			if( $url != '' ){
 				$projects = get_projects_by_url($url);
 
 				if( $projects ):
 					foreach( $projects as $project ):
-						update_git($project->ID);
+						$data = array(
+							'text' => update_git($project->ID)
+							);
+						$format = array('%s');
+						$wpdb->insert($table,$data,$format);
 					endforeach;
 				endif;
 			}
